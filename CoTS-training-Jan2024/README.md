@@ -12,21 +12,25 @@ The GBR DMS provides a **metadata catalogue**, a **public AWS S3 repository of d
 <details>
 <summary><b>The STAC metadata catalogue</b></summary>
 
-The metadata catalogue is the discovery portal. The datasets are organised in items inside collections. A collection is a group of similar items (datasets) maintained by the same data provider or that referes to a similar type of data. For example, GBRMPA maintains a set of administrative regions (like GBR marine park limit) or natural features (GBR features); all theses datasets (items) are under the same collection (GBRMPA Administrative Regions).
+The metadata catalogue is the discovery portal. The datasets are organised in items inside collections. A collection is a group of similar items (datasets) maintained by the same data provider or refers to a similar type of data. For example, GBRMPA maintains a set of administrative regions (like GBR marine park limit) or natural features (GBR features); all these datasets (items) are under the same collection (GBRMPA Administrative Regions).
 
-At the collection level, you can search for datasets based on names or keywords. The search will return the collections that contain items related to your query. Selecting one collection you can search again by temporal/spatial exten and names.
+At the collection level, you can search for datasets based on names or keywords. The search will return the collections that contain items related to your query. Selecting one collection you can search again by temporal/spatial extent and names.It will return a set of item that fit your query.
 
 </details>
 
 <details>
 <summary><b>The AWS S3 public repository</b></summary>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tincidunt ligula eu ligula fermentum aliquet. Donec gravida urna et sapien dictum tristique. Pellentesque sed nunc ut dolor dignissim iaculis. Sed quam dui, gravida nec eros eget, tincidunt aliquet arcu. Vestibulum sollicitudin neque at sem accumsan porta. Etiam ipsum quam, vehicula quis laoreet vitae, pellentesque quis erat. Morbi tincidunt tincidunt nisl eget sagittis. Vivamus pulvinar elit in enim hendrerit, eget varius metus tincidunt. Sed leo neque, feugiat ac diam a, mollis elementum libero. Nulla vitae ex ac purus consequat blandit. In dui libero, condimentum sed commodo at, interdum vitae erat. Nullam consequat magna in fermentum semper. Quisque tortor urna, imperdiet sit amet luctus nec, iaculis at mauris.
 
 </details>
 
 <details>
 <summary><b>The data API</b><summary>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tincidunt ligula eu ligula fermentum aliquet. Donec gravida urna et sapien dictum tristique. Pellentesque sed nunc ut dolor dignissim iaculis. Sed quam dui, gravida nec eros eget, tincidunt aliquet arcu. Vestibulum sollicitudin neque at sem accumsan porta. Etiam ipsum quam, vehicula quis laoreet vitae, pellentesque quis erat. Morbi tincidunt tincidunt nisl eget sagittis. Vivamus pulvinar elit in enim hendrerit, eget varius metus tincidunt. Sed leo neque, feugiat ac diam a, mollis elementum libero. Nulla vitae ex ac purus consequat blandit. In dui libero, condimentum sed commodo at, interdum vitae erat. Nullam consequat magna in fermentum semper. Quisque tortor urna, imperdiet sit amet luctus nec, iaculis at mauris.
 
 </details>
+
+
 
 ## Case Study examples
 
