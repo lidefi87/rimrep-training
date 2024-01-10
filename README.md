@@ -28,9 +28,9 @@ The lines above will run a function that automatically checks if any `R` librari
 </details>
 
 <details>
-<summary><b> Instructions for Python users </b></summary>
+<summary><b> Instructions for Python users </b></summary> 
+
 We are also including a `requirements.txt` file under the [Python_based_scripts](https://github.com/aodn/rimrep-training/tree/main/Python_based_scripts) folder, which contains all `Python` packages used in the notebooks above. You can use this file to create a [`conda` environment](https://docs.conda.io/projects/conda/en/latest/user-guide/concepts/environments.html) with all the required packages. To do so, run the following command in the Anaconda Prompt (Windows) or in your terminal (MacOS, Linux):  
-  
 ```bash
 conda env create -f requirements.txt -n rimrep
 ```
