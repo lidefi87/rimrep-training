@@ -1,21 +1,23 @@
-# CoTS Use Case Training Workshop
+# Crown of Thorns Starfish (CoTS) Use Case Training Workshop
 ### 23 January 2024
 
 ## Goal
 
-To use the GBR Data Management System (DMS) to extract and analyse data (point or time series data) from selected datasets provided by the DMS
-
+To use the [GBR Data Management System (DMS)](https://stac.reefdata.io/browser/?.language=en) to extract and analyse data (point or time series data) from selected datasets hosted in the DMS. Note that you will need to have a GBR DMS account to access data.  
+  
 ## How to use DMS services and data
 
-The GBR DMS provides a **metadata catalogue**, a **public AWS S3 repository of datasets** and a **data API**. The DMS also manages non-public datasets that could be accessed after authorisation.
-
+The GBR DMS provides three ways to search for public data: a **metadata catalogue**, a **public AWS S3 repository of datasets**, and a **data API**. Click on the titles below to find more information about each of these methods.  
+  
+Also note that while the majority of datasets in the DMS are publicly available, the DMS also manages non-public datasets that could be accessed after authorisation from the original data provider. This is the reason why DMS users need an account to access this system.     
+  
 <details>
 <summary><b>The STAC metadata catalogue</b></summary>
 
-The metadata catalogue is the discovery portal. The datasets are organised in items inside collections. A collection is a group of similar items (datasets) maintained by the same data provider or refers to a similar type of data. For example, GBRMPA maintains a set of administrative regions (like GBR marine park limit) or natural features (GBR features); all these datasets (items) are under the same collection (GBRMPA Administrative Regions).
-
-At the collection level, you can search for datasets based on names or keywords. The search will return the collections that contain items related to your query. Selecting one collection you can search again by temporal/spatial extent and names.It will return a set of item that fit your query.
-
+The metadata catalogue is the discovery portal. The datasets are organised as *items* inside **collections**. A **collection** is a group of similar *items* (datasets) either maintained by the same data provider (e.g., GBRMPA), or it can also refer to a similar type of data. For example, GBRMPA maintains a set of administrative regions (e.g., GBR marine protected area boundaries) and another for natural features (e.g., reefs inside the boundaries of the GBR). Both of these datasets (*items*) are included under the same *collection** ([GBRMPA Administrative Spatial Regions](https://stac.reefdata.io/browser/collections/gbrmpa-admin-regions)).  
+  
+In the DMS, you can search for datasets by their name or using keywords. This search will return any collections that contain items related to your query. You can further search filter results by selecting one of the collection and searching by temporal/spatial extent and names. This will return a set of items (within the chosen collection) that fits your query.  
+  
 </details>
 
 <details>
@@ -34,19 +36,34 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tincidunt ligul
 
 ## Case Study examples
 
-We will be working on the following use case examples: 
+We will be working on the following use case examples:  
 
-1. Extract eReef model time series data for a selected point (coordinates) or reef (reef name), using hydrological and biochemical products.
-2. Extract and calculate average values for eReef model variables for an area defined by a shape file withing an specified time frame
-3. Extract a time series of values from LTMP/MMP modelled output for a particular reef or a list of reefs
+1. Extract eReef model time series data for a selected point (coordinates) or reef (reef name), using hydrological and biochemical products.  
+2. Extract and calculate average values for eReef model variables for an area defined by a shapefile within a specified time frame.  
+3. Extract a time series from LTMP/MMP model output for a particular reef or list of reefs.  
 
 ## Notebooks
 
-
-
+Example notebooks for this workshop were developed in `R` because it is the most widely used programming language within the CoTS team. However, the DMS can also be accessed using `Python`, you can see some examples in [this repository](https://github.com/aodn/rimrep-examples/tree/main/Python_based_scripts). Before running these `R` notebooks, make sure you have installed all libraries used in this workshop.  
+  
+To keep the DMS secure, we provide DMS users with tokens that last xxx hours. While tokens are current, users are able to access any public datasets in the DMS, as well as any non-public dataset for which they have been granted permission. Tokens should be treated similar to passwords and they should not be shared.  
+  
+To ensure you do not accidentally share a token within a script, we recommend that you create an environmental variable in `R` called `RIMREP_DMS_TOKEN` to store your token. You can create this environmental variable as follows:  
+  
+```R
+#Create or update the environmental variable 
+Sys.setenv("RIMREP_DMS_TOKEN" = "paste_DMS_token_here")
+#Check environmental variable has been corrected created/updated
+Sys.getenv("RIMREP_DMS_TOKEN")
+```
+  
+**Note:** The DMS token must be given within quotation marks, for example: `"example_token123"`. If you provide the token as `example_token123`, that is without quotation marks (`""`), you will get an error.   
+  
+In the example notebooks, we will show you how to use this environmental variable to access gridded data in `zarr` format.  
+  
 ## Datasets to be used
 
-The files required for this workshop are: 
+In this workshop, we will use the following datasets: 
 
 | Dataset Title                                                                                  | STAC Metadata URL                                                                                           | s3 URI                                                                               | Pygeoapi URL                                                                               | Security       |
 |------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|----------------|
