@@ -370,6 +370,4 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
 }
 
 
-x <- "https://pygeoapi.staging.reefdata.io/collections/noaa-crw-dhw/coverage?datetime=2023-01-01/2023-01-03&subset=lon(145.30:146.90),lat(-17:-16.30)"
-
 
