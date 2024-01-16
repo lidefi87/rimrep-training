@@ -39,6 +39,7 @@ You can request the token using command line commands or inside your code. Note 
 <details>
 <summary><b>Command Line</b></summary>
 It is recommended to store the CLIENT_ID and CLIENT_SECRET in an evironmental variables. Assuming that you have this variable already assigned, you can request the access token using the following command: 
+
 ```
 ACCESS_TOKEN=$(curl --location --request POST "https://keycloak.reefdata.io/realms/rimrep-production/protocol/openid-connect/token" -s \
   --header "Content-Type: application/x-www-form-urlencoded" \
@@ -49,6 +50,48 @@ ACCESS_TOKEN=$(curl --location --request POST "https://keycloak.reefdata.io/real
 
 </details>
 
+
+<details>
+<summary><b>Python</b></summary>
+Assuming that CLIENT_ID and CLIENT_SECRET are stored as environment variables: 
+
+```
+import requests
+import os
+
+client_id = os.environ["CLIENT_ID"]
+client_secret = os.environ["CLIENT_SECRET"]
+
+pygeoapi_url = "https://pygeoapi.development.reefdata.io"
+
+# Get the access token
+url = "https://keycloak.reefdata.io/realms/rimrep-production/protocol/openid-connect/token"
+headers = {"Content-Type": "application/x-www-form-urlencoded"}
+data = {
+    "client_id": client_id,
+    "client_secret": client_secret,
+    "grant_type": "client_credentials",
+}
+response = requests.post(url, headers=headers, data=data)
+
+assert response.status_code == 200, response.text
+
+access_token = response.json().get("access_token")
+
+```
+
+
+<details>
+<summary><b>R</b></summary>
+Assuming that CLIENT_ID and CLIENT_SECRET are stored as environment variables: 
+
+```
+R code here
+
+```
+
+
+</details>
 
 </details>
 
