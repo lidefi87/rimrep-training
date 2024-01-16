@@ -28,7 +28,27 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tincidunt ligul
 
 <details>
 <summary><b>The data API</b></summary>
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tincidunt ligula eu ligula fermentum aliquet. Donec gravida urna et sapien dictum tristique. Pellentesque sed nunc ut dolor dignissim iaculis. Sed quam dui, gravida nec eros eget, tincidunt aliquet arcu. Vestibulum sollicitudin neque at sem accumsan porta. Etiam ipsum quam, vehicula quis laoreet vitae, pellentesque quis erat. Morbi tincidunt tincidunt nisl eget sagittis. Vivamus pulvinar elit in enim hendrerit, eget varius metus tincidunt. Sed leo neque, feugiat ac diam a, mollis elementum libero. Nulla vitae ex ac purus consequat blandit. In dui libero, condimentum sed commodo at, interdum vitae erat. Nullam consequat magna in fermentum semper. Quisque tortor urna, imperdiet sit amet luctus nec, iaculis at mauris.
+The data API services are provided by DMS' [pygeoapi](https://pygeoapi.io) a server implementation of a set of [OGC API standards](https://ogcapi.ogc.org). This service allows you to extract data from every collection using simple filters like time and space.
+
+Due to security reasons, you need an Access Token to be able to use the API services. The DMS project will create a set of unique user credentials that need to be used to request the access token. Please write to info-dms@utas.edu.au if you plan to use the API services. The DMS will send you the CLIENT_ID and CLIENT_SECRET. Please consider this values as a password and as such, keep it private.
+
+### How to get the access token
+
+You can request the token using command line commands or inside your code. Note that the token is valid only for one hour, so it is possible that you need to request a new token for each new API call.
+
+<details>
+<summary><b>Command Line</b></summary>
+It is recommended to store the CLIENT_ID and CLIENT_SECRET in an evironmental variables. Assuming that you have this variable already assigned, you can request the access token using the following command: 
+```
+ACCESS_TOKEN=$(curl --location --request POST "https://keycloak.reefdata.io/realms/rimrep-production/protocol/openid-connect/token" -s \
+  --header "Content-Type: application/x-www-form-urlencoded" \
+  --data-urlencode "client_id=$CLIENT_ID" \
+  --data-urlencode "client_secret=$CLIENT_SECRET" \
+  --data-urlencode "grant_type=client_credentials" | jq -r '.["access_token"]')
+```
+
+</details>
+
 
 </details>
 
