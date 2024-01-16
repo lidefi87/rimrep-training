@@ -26,7 +26,23 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tincidunt ligul
 
 <details>
 <summary><b>The data API</b></summary>
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tincidunt ligula eu ligula fermentum aliquet. Donec gravida urna et sapien dictum tristique. Pellentesque sed nunc ut dolor dignissim iaculis. Sed quam dui, gravida nec eros eget, tincidunt aliquet arcu. Vestibulum sollicitudin neque at sem accumsan porta. Etiam ipsum quam, vehicula quis laoreet vitae, pellentesque quis erat. Morbi tincidunt tincidunt nisl eget sagittis. Vivamus pulvinar elit in enim hendrerit, eget varius metus tincidunt. Sed leo neque, feugiat ac diam a, mollis elementum libero. Nulla vitae ex ac purus consequat blandit. In dui libero, condimentum sed commodo at, interdum vitae erat. Nullam consequat magna in fermentum semper. Quisque tortor urna, imperdiet sit amet luctus nec, iaculis at mauris.
+the DMS API services are provided by our `pygeoapi` service. This is a python implementation of the new OGC standards. With it, you can make API calls to request portions of the data, slicing it by time and/or space.
+
+To access the API services, a client needs to be created by the DMS. This client will have an unique set of credentials (secrets) that will be used to request an access token. You need to pass the token along with any API call. For security reasons, the token will have only one hour of validity, so probably you will like to request a new token for every new api call. This token is also valid for making STAC fast-api call (metadata). To request the token you need to provide the Client secrets.
+
+Using command line: 
+
+```
+CLIENT_ID=<provided by the DMS>
+CLIENT_SECRET=<provided by the DMS>
+ACCESS_TOKEN=$(curl --location --request POST "https://keycloak.reefdata.io/realms/rimrep-production/protocol/openid-connect/token" -s \
+  --header "Content-Type: application/x-www-form-urlencoded" \
+  --data-urlencode "client_id=$CLIENT_ID" \
+  --data-urlencode "client_secret=$CLIENT_SECRET" \
+  --data-urlencode "grant_type=client_credentials" | jq -r '.["access_token"]')
+```
+
+
 
 </details>
 
