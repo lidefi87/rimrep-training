@@ -165,39 +165,10 @@ sites_of_interest <- function(sites_pts, area_polygons){
 }
 
 
-## Defining functions to access RIMReP DMS via API
-# Getting token as user input ---------------------------------------------
-# Input from user will not be visible in screen
-# Script originally from https://www.magesblog.com/post/2014-07-15-simple-user-interface-in-r-to-get-login/
-access_dms <- function(){
-  require(tcltk)
-  
-  tt <- tktoplevel()
-  tkwm.title(tt, "Get login details")
-  Password <- tclVar("Password")
-  entry.Password <- tkentry(tt, width = "20", show = "*", 
-                            textvariable = Password)
-  tkgrid(tklabel(tt, text = "Please enter your login details."))
-  tkgrid(entry.Password)
-  
-  OnOK <- function()
-  { 
-    tkdestroy(tt) 
-  }
-  OK.but <-tkbutton(tt, text = " OK ", command = OnOK)
-  tkbind(entry.Password, "<Return>", OnOK)
-  tkgrid(OK.but)
-  tkfocus(tt)
-  tkwait.window(tt)
-  
-  invisible(tclvalue(Password))
-}
-
-
 # Accessing DMS using token provided as input -----------------------------
 connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL, 
                                 end_time = NULL, lon_limits = NULL, 
-                                lat_limits = NULL){
+                                lat_limits = NULL, token = Sys.getenv("RIMREP_DMS_TOKEN")){
   #########
   #This function connects to RIMReP API to extract gridded data. It can extract
   #data using spatial and temporal limits
@@ -215,6 +186,8 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
   #should be extracted.
   #lat_limits (numeric vector): minimum and maximum latitudes from where data
   #should be extracted.
+  #token (character): Token produced by DMS to access the system. By default, the
+  #function looks for the token in the "RIMREP_DMS_TOKEN" environmental variable.
   #
   #Outputs:
   #raster (terra SpatRaster): Raster including data for the variable of choice. 
@@ -222,9 +195,9 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
   #########
   
   #Parse API URL
-  url <-  parse_url(API_base_url)
+  url <- parse_url(API_base_url)
   #Add coverage to path ending - Ensure path does not end in "/"
-  url$path <- file.path(str_remove(url$path, "/$"), "coverage")
+  # url$path <- file.path(str_remove(url$path, "/$"), "coverage")
   
   #Initialising query list
   query_list <- list()
@@ -260,7 +233,7 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
   
   #If temporal limits provided, add to URL query
   if(exists("dt_limits")){
-    query_list$datetime <- dt_limits
+    query_list$time <- dt_limits
     url$query <- query_list
   }
   
@@ -275,7 +248,7 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
       if(sum(is.na(lon_limits)) > 0){
         stop("Longitudinal limits provided are not numbers")}
     }
-    lon_query <- paste0("lon(", paste0(sort(lon_limits), collapse = ":"), ")")
+    lon_query <- paste0("longitude(", paste0(sort(lon_limits), collapse = ":"), ")")
   }
   
   #Latitudinal limits
@@ -288,7 +261,7 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
       if(sum(is.na(lat_limits)) > 0){
         stop("Latitudinal limits provided are not numbers")}
     }
-    lat_query <- paste0("lat(", paste0(sort(lat_limits), collapse = ":"), ")")
+    lat_query <- paste0("latitude(", paste0(sort(lat_limits), collapse = ":"), ")")
   }
   
   #If temporal limits provided, add to URL query
@@ -306,18 +279,27 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
   #Build URL
   url <- build_url(url)
   
-  #Ask for token - Do not show token
-  token <- access_dms()
-  
   #Connect to API
   ds_conn <- request(url) |>
     req_headers("Authorization" = paste("Bearer", token),
                 Accept = "application/json") |>
     req_perform()
   
-  #Turn results to JSON
-  res_json <- ds_conn |> 
-    resp_body_json()
+  ##############################################################################
+  #Turn results to JSON - NOT WORKING
+  # res_json <- ds_conn |> 
+  #   resp_body_json()
+  #Gets data
+  library(rvest)
+  x <- read_html(url) |> 
+    html_node(xpath = "body/div") |> 
+    html_text() |> 
+    strsplit(split = "\n|\t") |> 
+    unlist() |> 
+    as.data.frame(nm = "response") |>
+    mutate(response = str_trim(response, "both")) |> 
+    filter(response != "")
+  ##############################################################################
   
   #Extract values for variable of interest
   var_int <- res_json[["ranges"]][[variable_name]][["values"]]
@@ -368,8 +350,5 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
   #Return raster
   return(brick)
 }
-
-
-x <- "https://pygeoapi.staging.reefdata.io/collections/noaa-crw-dhw/coverage?datetime=2023-01-01/2023-01-03&subset=lon(145.30:146.90),lat(-17:-16.30)"
 
 
