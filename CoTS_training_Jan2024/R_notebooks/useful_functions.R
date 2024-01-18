@@ -261,7 +261,7 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
   
   #Checking URL ending is correct
   if(str_detect(API_base_url, "coverage$", negate = T)){
-    url <- str_replace(base, "//$", "") |> 
+    url <- str_replace(API_base_url, "/$", "") |> 
       str_c("/coverage?")}
   
   #Initialising query list
