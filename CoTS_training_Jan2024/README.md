@@ -52,12 +52,15 @@ source("R_notebooks/useful_functions.R")
 token <- dms_token(Sys.getenv("CLIENT_ID"), Sys.getenv("CLIENT_SECRET"))
 
 ```
+  
+In the code above, the access token will be stored in `token` variable.  
+  
 </details>
   
 <details>
 <summary><b>Command Line Interface</b></summary>
   
-It is recommended to store the `CLIENT_ID` and `CLIENT_SECRET` in an environmental variable. Assuming that you have already defined these environmental variables, you can request an access token using the following command: 
+It is recommended to store the `CLIENT_ID` and `CLIENT_SECRET` as environmental variables. Assuming that you have already defined these environmental variables, you can request an access token using the following command: 
 
 ```bash
 ACCESS_TOKEN=$(curl --location --request POST "https://keycloak.reefdata.io/realms/rimrep-production/protocol/openid-connect/token" -s \
@@ -71,7 +74,7 @@ ACCESS_TOKEN=$(curl --location --request POST "https://keycloak.reefdata.io/real
 <details>
 <summary><b>Python</b></summary>
   
-Assuming that `CLIENT_ID` and `CLIENT_SECRET` are already defined as environment variables: 
+Assuming that `CLIENT_ID` and `CLIENT_SECRET` are already defined as environment variables, you can use the code below to get the access token: 
 
 ```python
 import requests
@@ -100,7 +103,6 @@ access_token = response.json().get("access_token")
 </details>
 
 
-
 ## Use case examples
 
 We will be working on the following use case examples:  
@@ -125,10 +127,17 @@ Sys.setenv("CLIENT_SECRET" = "paste_CLIENT_SECRET_here")
 #Check environmental variable has been corrected created/updated
 Sys.getenv(c("CLIENT_ID", "CLIENT_SECRET"))
 ```
+    
+Note that the credentials must be given within quotation marks, for example: `"client_id123"`. If you provide the token as `client_id123`, that is without quotation marks (`""`), you will get an error.   
   
-**Note:** The credentials must be given within quotation marks, for example: `"client_id123"`. If you provide the token as `client_id123`, that is without quotation marks (`""`), you will get an error.   
+Setting environmental variables in this way will only save them for the duration of your `R` session. If you would like to store them permanently, you can use `usethis::edit_r_environ()` function. This will open a file called `.Renviron` in a new tab in your RStudio session. Copy and paste your credentials as shown below.  
   
-Given that `R` does not yet have good support for `zarr` data, we will show you how to access datasets via the API, so make sure you have set these environmental variables before the workshop.  
+```
+"CLIENT_ID" = "paste_CLIENT_ID_here"
+"CLIENT_SECRET" = "paste_CLIENT_SECRET_here"
+```
+  
+Save your changes, close the tab, and restart your `R` session for changes to take effect.  
   
 ## Datasets to be used
 
