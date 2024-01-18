@@ -36,11 +36,28 @@ If you need access to the API services, contact the DMS team by emailing [info-d
 ### Using the data API: How to get an access token
 
 You can generate an access token using command line commands or inside your code. Note that the access token is only valid for one hour, so it is possible that you need to request a new token for each new API call.
-
-<details>
-<summary><b>Command Line</b></summary>
   
-It is recommended to store the `CLIENT_ID` and `CLIENT_SECRET` in an environmental variable. Assuming that you have this variable already assigned, you can request the access token using the following command: 
+<details>
+<summary><b>R</b></summary>
+  
+Included in this folder, you will find a file called `useful_functions.R`. This file includes a collection of functions that you may find useful when accessing data in the DMS. One of the functions we are including is `dms_token`, which requests an access token using your DMS user credentials.
+  
+In the chunk below, we assume that you have stored your user credentials as environmental variables in `R`. If you have not, we have instructions on how to set environmental variables under the Notebooks[#notebooks] section further down in this document.  
+  
+```R
+#Loading DMS custom made functions
+source("R_notebooks/useful_functions.R")
+
+#Get access token
+token <- dms_token(Sys.getenv("CLIENT_ID"), Sys.getenv("CLIENT_SECRET"))
+
+```
+</details>
+  
+<details>
+<summary><b>Command Line Interface</b></summary>
+  
+It is recommended to store the `CLIENT_ID` and `CLIENT_SECRET` in an environmental variable. Assuming that you have already defined these environmental variables, you can request an access token using the following command: 
 
 ```bash
 ACCESS_TOKEN=$(curl --location --request POST "https://keycloak.reefdata.io/realms/rimrep-production/protocol/openid-connect/token" -s \
@@ -49,10 +66,8 @@ ACCESS_TOKEN=$(curl --location --request POST "https://keycloak.reefdata.io/real
   --data-urlencode "client_secret=$CLIENT_SECRET" \
   --data-urlencode "grant_type=client_credentials" | jq -r '.["access_token"]')
 ```
-
 </details>
-
-
+  
 <details>
 <summary><b>Python</b></summary>
   
@@ -64,8 +79,6 @@ import os
 
 client_id = os.environ["CLIENT_ID"]
 client_secret = os.environ["CLIENT_SECRET"]
-
-pygeoapi_url = "https://pygeoapi.development.reefdata.io"
 
 # Get the access token
 url = "https://keycloak.reefdata.io/realms/rimrep-production/protocol/openid-connect/token"
@@ -84,18 +97,6 @@ access_token = response.json().get("access_token")
 ```
 </details>
 
-<details>
-<summary><b>R</b></summary>
-Assuming that CLIENT_ID and CLIENT_SECRET are stored as environment variables: 
-
-```R
-R code here
-
-```
-
-
-</details>
-
 </details>
 
 
@@ -112,20 +113,22 @@ We will be working on the following use case examples:
 
 Example notebooks for this workshop were developed in `R` because it is the most widely used programming language within the CoTS team. However, the DMS can also be accessed using `Python`, you can see some examples in [this repository](https://github.com/aodn/rimrep-examples/tree/main/Python_based_scripts). Before running these `R` notebooks, make sure you have installed all libraries used in this workshop.  
   
-To keep the DMS secure, we provide DMS users with tokens that last one hour. While tokens are current, users are able to access any public datasets in the DMS, as well as any non-public dataset for which they have been granted permission. Tokens should be treated similar to passwords and they should not be shared.  
+To keep the DMS secure and to allow for different access levels to non-public datasets via the API, we provide DMS users with unique credentials. To access the API, users must generate an access token using their credentials. These token last one hour and while current, users are able to access any public datasets in the DMS, as well as any non-public dataset for which they have been granted permission. User credentials should be treated similar to passwords and they should not be shared.  
   
-To ensure you do not accidentally share a token within a script, we recommend that you create an environmental variable in `R` called `RIMREP_DMS_TOKEN` to store your token. You can create this environmental variable as follows:  
+To ensure you do not accidentally share your user credentials within a script, we recommend that you store this information as environmental variables in `R`. You can create these environmental variables as follows:  
   
 ```R
 #Create or update the environmental variable 
-Sys.setenv("RIMREP_DMS_TOKEN" = "paste_DMS_token_here")
+Sys.setenv("CLIENT_ID" = "paste_CLIENT_ID_here")
+Sys.setenv("CLIENT_SECRET" = "paste_CLIENT_SECRET_here")
+
 #Check environmental variable has been corrected created/updated
-Sys.getenv("RIMREP_DMS_TOKEN")
+Sys.getenv(c("CLIENT_ID", "CLIENT_SECRET"))
 ```
   
-**Note:** The DMS token must be given within quotation marks, for example: `"example_token123"`. If you provide the token as `example_token123`, that is without quotation marks (`""`), you will get an error.   
+**Note:** The credentials must be given within quotation marks, for example: `"client_id123"`. If you provide the token as `client_id123`, that is without quotation marks (`""`), you will get an error.   
   
-In the example notebooks, we will show you how to use this environmental variable to access gridded data in `zarr` format.  
+Given that `R` does not yet have good support for `zarr` data, we will show you how to access datasets via the API, so make sure you have set these environmental variables before the workshop.  
   
 ## Datasets to be used
 
