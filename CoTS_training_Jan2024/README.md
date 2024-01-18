@@ -14,7 +14,7 @@ Also note that while the majority of datasets in the DMS are publicly available,
 <details>
 <summary><b>The STAC metadata catalogue</b></summary>
 
-The metadata catalogue is the discovery portal. The datasets are organised as *items* inside **collections**. A **collection** is a group of similar *items* (datasets) either maintained by the same data provider (e.g., GBRMPA), or it can also refer to a similar type of data. For example, GBRMPA maintains a set of administrative regions (e.g., GBR marine protected area boundaries) and another for natural features (e.g., reefs inside the boundaries of the GBR). Both of these datasets (*items*) are included under the same *collection** ([GBRMPA Administrative Spatial Regions](https://stac.reefdata.io/browser/collections/gbrmpa-admin-regions)).  
+The metadata catalogue is the discovery portal. The datasets are organised as *items* inside **collections**. A **collection** is a group of similar *items* (datasets) either maintained by the same data provider (e.g., GBRMPA), or it can also refer to a similar type of data. For example, GBRMPA maintains a set of administrative regions (e.g., GBR marine protected area boundaries) and another for natural features (e.g., reefs inside the boundaries of the GBR). Both of these datasets (*items*) are included under the same **collection** ([GBRMPA Administrative Spatial Regions](https://stac.reefdata.io/browser/collections/gbrmpa-admin-regions)).  
   
 In the DMS, you can search for datasets by their name or using keywords. This search will return any collections that contain items related to your query. You can further search filter results by selecting one of the collection and searching by temporal/spatial extent and names. This will return a set of items (within the chosen collection) that fits your query.  
   
@@ -28,19 +28,19 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tincidunt ligul
 
 <details>
 <summary><b>The data API</b></summary>
-The data API services are provided by DMS' [pygeoapi](https://pygeoapi.io) a server implementation of a set of [OGC API standards](https://ogcapi.ogc.org). This service allows you to extract data from every collection using simple filters like time and space.
+The data API services are provided through [pygeoapi](https://pygeoapi.io) a server implementation of a set of [OGC API standards](https://ogcapi.ogc.org). This service allows you to extract data from every collection using simple filters like time and space. Note that given that not all datasets in the DMS are publicly available, DMS users will need to an **Access Token** to access the DMS API services.  
+  
+If you need access to the API services, contact the DMS team by emailing [info-dms@utas.edu.au](mailto:info-dms@utas.edu.au). We will create a unique set of `CLIENT_ID` and `CLIENT_SECRET` that you can use to create an **Access Token** following the instructions in the next section of this document. Note that the `CLIENT_ID` and `CLIENT_SECRET` should be considered private information, just like a password. This is because these identifiers are linked to a user profile that defines the private datasets you are granted permission to access.  
+  
+### Using the data API: How to get an access token
 
-Due to security reasons, you need an Access Token to be able to use the API services. The DMS project will create a set of unique user credentials that need to be used to request the access token. Please write to info-dms@utas.edu.au if you plan to use the API services. The DMS will send you the CLIENT_ID and CLIENT_SECRET. Please consider this values as a password and as such, keep it private.
-
-### How to get the access token
-
-You can request the token using command line commands or inside your code. Note that the token is valid only for one hour, so it is possible that you need to request a new token for each new API call.
+You can generate an access token using command line commands or inside your code. Note that the access token is only valid for one hour, so it is possible that you need to request a new token for each new API call.
 
 <details>
 <summary><b>Command Line</b></summary>
-It is recommended to store the CLIENT_ID and CLIENT_SECRET in an evironmental variables. Assuming that you have this variable already assigned, you can request the access token using the following command: 
+It is recommended to store the `CLIENT_ID` and `CLIENT_SECRET` in an environmental variable. Assuming that you have this variable already assigned, you can request the access token using the following command: 
 
-```
+```bash
 ACCESS_TOKEN=$(curl --location --request POST "https://keycloak.reefdata.io/realms/rimrep-production/protocol/openid-connect/token" -s \
   --header "Content-Type: application/x-www-form-urlencoded" \
   --data-urlencode "client_id=$CLIENT_ID" \
@@ -53,9 +53,9 @@ ACCESS_TOKEN=$(curl --location --request POST "https://keycloak.reefdata.io/real
 
 <details>
 <summary><b>Python</b></summary>
-Assuming that CLIENT_ID and CLIENT_SECRET are stored as environment variables: 
+Assuming that `CLIENT_ID` and `CLIENT_SECRET` are already defined as environment variables: 
 
-```
+```python
 import requests
 import os
 
@@ -85,7 +85,7 @@ access_token = response.json().get("access_token")
 <summary><b>R</b></summary>
 Assuming that CLIENT_ID and CLIENT_SECRET are stored as environment variables: 
 
-```
+```R
 R code here
 
 ```
@@ -97,7 +97,7 @@ R code here
 
 
 
-## Case Study examples
+## Use case examples
 
 We will be working on the following use case examples:  
 
@@ -109,7 +109,7 @@ We will be working on the following use case examples:
 
 Example notebooks for this workshop were developed in `R` because it is the most widely used programming language within the CoTS team. However, the DMS can also be accessed using `Python`, you can see some examples in [this repository](https://github.com/aodn/rimrep-examples/tree/main/Python_based_scripts). Before running these `R` notebooks, make sure you have installed all libraries used in this workshop.  
   
-To keep the DMS secure, we provide DMS users with tokens that last xxx hours. While tokens are current, users are able to access any public datasets in the DMS, as well as any non-public dataset for which they have been granted permission. Tokens should be treated similar to passwords and they should not be shared.  
+To keep the DMS secure, we provide DMS users with tokens that last one hour. While tokens are current, users are able to access any public datasets in the DMS, as well as any non-public dataset for which they have been granted permission. Tokens should be treated similar to passwords and they should not be shared.  
   
 To ensure you do not accidentally share a token within a script, we recommend that you create an environmental variable in `R` called `RIMREP_DMS_TOKEN` to store your token. You can create this environmental variable as follows:  
   
