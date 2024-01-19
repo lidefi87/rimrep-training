@@ -107,8 +107,8 @@ access_token = response.json().get("access_token")
 
 We will be working on the following use case examples:  
 
-1. Extract eReef model time series data for a selected point (coordinates) or reef (reef name), using hydrological and biochemical products.  
-2. [Extract and calculate average values for eReef model variables for an area defined by a bounding box within a specified time frame](https://github.com/aodn/rimrep-training/blob/main/CoTS_training_Jan2024/R_notebooks/02_eReef_timeseries.Rmd).  
+1. [Extract time series from eReef model outputs using a shapefile for a reef from the GBR features dataset](https://github.com/aodn/rimrep-training/blob/main/CoTS_training_Jan2024/R_notebooks/01_eReef_data_extraction.Rmd).  
+2. [Extract and calculate average values for eReef model variables for an area defined by a bounding box within a specified time frame](https://github.com/aodn/rimrep-training/blob/main/CoTS_training_Jan2024/R_notebooks/02_eReef_maps_timeseries.Rmd).  
 3. Extract a time series from LTMP/MMP model output for a particular reef or list of reefs.  
 
 ## Notebooks
