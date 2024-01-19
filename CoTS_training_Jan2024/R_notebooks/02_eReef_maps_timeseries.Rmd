@@ -8,11 +8,11 @@ output:
     html_preview: false
 ---
 
-# Extracting time series from eReefs outputs
+# Plotting maps and time series from eReefs outputs
 
 [eReefs](https://research.csiro.au/ereefs/) is a group of environmental models managed by various government and non-profit organisations. These models can simulate past conditions and predict future states for hydrodynamic conditions, sediment transport, and water quality within the Greet Barrier Reef (GBR). The aim is to provide information about the past and current states of GBR, as well as its likely future condition.  
   
-eReefs model outputs can be found in the DMS under the [**eReefs** collection](https://stac.development.reefdata.io/browser/collections/ereefs). In this notebook, we will use the [daily hydrodynamic model outputs at a 1 km resolution](https://stac.development.reefdata.io/browser/collections/ereefs/items/aims-ereefs-agg-hydrodynamic-1km-daily?.asset=asset-data) as an example of how to extract data.  
+eReefs model outputs can be found in the DMS under the [**eReefs** collection](https://stac.reefdata.io/browser/collections/ereefs). In this notebook, we will use the [daily hydrodynamic model outputs at a 1 km resolution](https://stac.reefdata.io/browser/collections/ereefs/items/aims-ereefs-agg-hydrodynamic-1km-daily?.asset=asset-data) as an example of how to extract data.  
   
 ## Loading libraries
   
@@ -29,7 +29,7 @@ library(tibble)
 
 ## Connecting to RIMREP collection via API
 
-From the STAC catalogue item for the [daily hydrodynamic model outputs at a 1 km resolution](https://stac.development.reefdata.io/browser/collections/ereefs/items/aims-ereefs-agg-hydrodynamic-1km-daily?.asset=asset-data), we can get the link to the API from the *Additional Resources* section of the page on the left under the map.  
+From the STAC catalogue item for the [daily hydrodynamic model outputs at a 1 km resolution](https://stac.reefdata.io/browser/collections/ereefs/items/aims-ereefs-agg-hydrodynamic-1km-daily?.asset=asset-data), we can get the link to the API from the *Additional Resources* section of the page on the left under the map.  
     
 As an example, we will access data for using the API link for the period between 2023-01-01 and 2023-01-07. We will only select data for coastal waters up to ~150 km away from the coastline between Daintree and Cairns.  
   
@@ -98,7 +98,7 @@ The names gives us an indication of what is happening here. Let's break it down 
   
 We could have also referred to the STAC catalogue for this [item](https://stac.reefdata.io/browser/collections/ereefs/items/aims-ereefs-agg-hydrodynamic-1km-daily?.language=en-AU&.asset=asset-data), which has links to the original data and metadata that can help us understand our data.  
   
-Now that we understand our data structure better, we will calculate the mean surface temperature for the seven day for which we have data, and create a map.  
+Now that we understand our data structure better, we will calculate the mean surface temperature for the seven days for which we have data, and create a map.  
   
 ## Calculating mean temperature values for area of interest
 Before calculating a mean, we will need to subset our raster. Notice that the smallest depth value in the names is -0.5, so we will use this information to select the top layers only.  
@@ -144,7 +144,7 @@ ggplot()+
   theme(plot.title = element_text(hjust = 0.5))
 ```
   
-Now the `NA` values show as a bright pink, and there is much less of these grid cells, which makes sense. However, bright pink is probably not the best choice of colour, but it highlights them in our example and  illustrates how to do this.  
+Now the `NA` grid cells show as a bright pink, and there are much less of these grid cells, which makes sense. However, bright pink is probably not the best choice of colour, but it highlights them in our example map above. You can simply replace the pink by some other more sensible choice.    
     
 ## Calculating time series for temperature raster
 The `terra` package has a `global` function that allows us to apply a function across the entire raster. We will use it to calculate mean temperature values for each time step. This will return a data frame with mean temperature values per layer.    
@@ -195,5 +195,5 @@ temp_ts_gbr |>
         axis.text.x = element_text(angle = 45, hjust = 1))
 ```
    
-We got a line plot with mean temperatures over time for each depth bin in the model. We can save this plot using the `ggsave` function.  
+We have a line plot with mean temperatures over time for each depth bin in the model. We can save this plot using the `ggsave` function.  
   
