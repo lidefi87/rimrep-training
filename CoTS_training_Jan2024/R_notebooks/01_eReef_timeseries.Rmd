@@ -21,6 +21,9 @@ eReefs model outputs can be found in the DMS under the [**eReefs** collection](h
 source("useful_functions.R")
 #Mapping
 library(terra)
+library(sf)
+library(tidyterra)
+library(rnaturalearth)
 ```
 
 ## Connecting to RIMREP collection via API
@@ -35,7 +38,10 @@ For this example, we will select data for coastal waters up to 150 km away from 
     
 ```{r}
 #Defining API URL (obtained from STAC catalogue)
-base_url <- "https://pygeoapi.development.reefdata.io/collections/aims-ereefs-agg-hydrodynamic-1km-daily/coverage"
+base_url <- "https://pygeoapi.development.reefdata.io/collections/aims-ereefs-agg-hydrodynamic-1km-daily/"
+
+## get the token
+access_token <- Sys.getenv("ACCESS_TOKEN")
 
 #Defining variable of interest (obtained from STAC catalogue)
 variable_name <- "temp"
@@ -44,7 +50,30 @@ variable_name <- "temp"
 temp_gbr <- connect_dms_dataset(base_url, variable_name,
                            start_time = "2023-01-01", end_time = "2023-01-07", 
                            lon_limits = c(145.30, 146.90),
-                           lat_limits = c(-17, -16.30))
+                           lat_limits = c(-17, -16.30), access_token = access_token)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+We will plot the first layer of this raster in a map.  
+  
+```{r}
+#Get map of Australia
+aust <- ne_countries(country = "Australia", returnclass = "sf")
+
+#Start a plot
+ggplot()+
+  #Plot one raster layer
+  geom_spatraster(data = temp_gbr$`temp_k=-0.5_7`)+
+  #Choose a nicer palette for our map
+  scale_fill_distiller(palette = "YlOrRd")+
+  #Add Australia
+  geom_sf(data = aust)+
+  #Establish map limits
+  lims(x = c(145.30, 146.90), y = c(-17, -16.30))+
+  #Apply a nice predefined theme
+  theme_bw()+
+  #Add a title
+  labs(title = "Temperature in degrees C")+
+  #Center the plot title
+  theme(plot.title = element_text(hjust = 0.5))
+```
+  
