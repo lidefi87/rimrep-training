@@ -40,15 +40,17 @@ If you do not user credentials, you will not be able to access our API, please c
 ```{r}
 #Defining API URL (obtained from STAC catalogue)
 base_url <- "https://pygeoapi.reefdata.io/collections/aims-ereefs-agg-hydrodynamic-1km-daily/"
+#access_token <- <PASTE YOUR ACCESS TOKEN HERE. GO TO http://dashboard.reefdata.io TO GET IT>
 
 #Defining variable of interest (obtained from STAC catalogue)
 variable_name <- "temp"
 
 #Connecting to DMS to extract data
-temp_gbr <- connect_dms_dataset(base_url, variable_name,
-                           start_time = "2023-01-01", end_time = "2023-01-07", 
-                           lon_limits = c(145.30, 146.90),
-                           lat_limits = c(-17, -16.30))
+temp_gbr <- connect_dms_dataset(API_base_url = base_url, 
+                                variable_name, 
+                                start_time = "2023-01-01", end_time = "2023-01-05", 
+                                lon_limits = c(145.5, 146.00),
+                                lat_limits = c(-17.00, -16.50))
 ```
   
 ## Plotting data 

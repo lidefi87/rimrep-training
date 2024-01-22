@@ -224,7 +224,7 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
   if(missing(access_token)){
     #If client_id does not exist, check environmental variable
     if(missing(client_id)){
-      message("No 'access_token' and no user credentials were provided as input.")
+      message("Warning: No 'access_token' and no user credentials were provided as input.")
       message("Checking if 'CLIENT_ID' variable exists.")
       #If environmental variable exists, assign to client_id
       if(tryCatch(expr = !is.na(Sys.getenv("CLIENT_ID", unset = NA)))){
@@ -235,7 +235,7 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
       }}
     #If client_secret does not exist, check environmental variable
     if(missing(client_secret)){
-        message("No 'access_token' and user credentials were provided as input.")
+        message("Warning: No 'access_token' and user credentials were provided as input.")
         message("Checking if 'CLIENT_SECRET' variable exists.")
         #If environmental variable exists, assign to client_secret
         if(tryCatch(expr = !is.na(Sys.getenv("CLIENT_SECRET", unset = NA)))){
@@ -371,7 +371,7 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
   #Download data as temporary file
   con <- request(url) |>
     #Pass access token
-    req_auth_bearer_token(access_token) |> 
+    req_auth_bearer_token(access_token) |>
     #Download as temporary file
     req_perform()
   
