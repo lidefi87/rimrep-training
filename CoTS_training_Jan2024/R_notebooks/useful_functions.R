@@ -9,7 +9,6 @@ library(arrow)
 library(dplyr)
 library(magrittr)
 library(stringr)
-library(wkb)
 library(ggplot2)
 library(sf)
 library(lubridate)
@@ -100,7 +99,7 @@ sub_ID <- function(site_ID, sites){
 ## Getting shapefile with Great Barrier Reef features ---------------------
 gbr_features <- function(site_name = NULL, site_ID = NULL){
   #Establishing connection
-  data_bucket <- s3_bucket("s3://rimrep-data-public/gbrmpa-complete-gbr-features")
+  data_bucket <- s3_bucket("s3://gbr-dms-data-public/gbrmpa-complete-gbr-features/data.parquet")
   #Accessing dataset
   data_df <- open_dataset(data_bucket)
   
@@ -113,20 +112,8 @@ gbr_features <- function(site_name = NULL, site_ID = NULL){
   
   #Cleaning up data
   sites_all <- sites_all %>% 
-    #Adding column with spatial information in degrees
-    mutate(coords_deg = readWKB(geometry) %>% st_as_sf())
-  
-  #Clean up sites information transforming into shapefile
-  sites_all <- sites_all %>%
-    #Removing original geometry column
-    select(!geometry) %>% 
-    #Renaming coordinate degrees column
-    mutate(coords_deg = coords_deg$geometry) %>% 
-    rename("geometry" = "coords_deg") %>% 
-    #Transforming into shapefile
-    st_as_sf() %>% 
-    #Assigning reference systems: WGS84 (EPSG: 4326)
-    st_set_crs(4326)
+    #Turning into sf object and assigning reference system: GDA94 (EPSG: 4283)
+    st_as_sf(crs = 4283)
   
   #Ensuring simple feature has valid geometries
   sites_all <- st_make_valid(sites_all)
@@ -200,10 +187,9 @@ dms_token <- function(client_id, client_secret){
 
 # Accessing DMS API using credentials provided as input ------------------------
 connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL, 
-                                end_time = NULL, lon_limits = NULL, 
+                                end_time = NULL, bounding_shape = NULL, lon_limits = NULL, 
                                 lat_limits = NULL, access_token = NULL,
-                                client_id = NULL,
-                                client_secret = NULL){
+                                client_id = NULL, client_secret = NULL){
   #########
   #This function connects to RIMReP API to extract gridded data. It can extract
   #data using spatial and temporal limits
@@ -217,6 +203,9 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
   #YYYY-MM-DD
   #end_time (character/date): Last date for which data is extracted. Date must be
   #provided as YYYY-MM-DD. If no start_time is given, an error will be raised.
+  #bounding_shape (sf vector file): This input will be used to calculate a bounding box
+  #for raster data extraction. If this is provided, lon_limits and lat_limits will
+  #be ignored.
   #lon_limits (numeric vector): minimum and maximum longitudes from where data
   #should be extracted.
   #lat_limits (numeric vector): minimum and maximum latitudes from where data
@@ -295,60 +284,83 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
     }else{
       stop("'start_time' cannot be later than or equal to 'end_time'")}
   }
-  
   #If temporal limits provided, add to URL query
   if(exists("dt_limits")){
     query_list <- str_c("datetime=", dt_limits)
-  }
-  
-  #Check if spatial limits were provided
-  #Longitudinal limits
-  if(!is.null(lon_limits)){
-    #Ensure vector provided is numeric, otherwise print error
-    if(is.numeric(lon_limits) == F){
-      lon_limits <- tryCatch(expr = as.numeric(lon_limits),
-                             warning = function(w){
-                               stop("Longitudinal limits provided are not numbers")})
-      if(sum(is.na(lon_limits)) > 0){
-        stop("Longitudinal limits provided are not numbers")}
     }
-    lon_query <- sort(lon_limits)
-  }
   
-  #Latitudinal limits
-  if(!is.null(lat_limits)){
-    #Ensure vector provided is numeric, otherwise print error
-    if(is.numeric(lat_limits) == F){
-      lat_limits <- tryCatch(expr = as.numeric(lat_limits),
-                             warning = function(w){
-                               stop("Latitudinal limits provided are not numbers")})
-      if(sum(is.na(lat_limits)) > 0){
-        stop("Latitudinal limits provided are not numbers")}
+  #Check if shapefile was provided
+  if(!missing(bounding_shape)){
+    #Checking that bounding box is in the correct EPSG
+    if(st_crs(bounding_shape) != st_crs(4326)){
+      bounding_shape <- st_transform(bounding_shape, 4326)
     }
-    lat_query <- sort(lat_limits)
-  }
-  
-  #If temporal limits provided, add to URL query
-  if(exists("lon_query") & exists("lat_query")){
-    box_lims <- paste(lon_query[1], lat_query[1], 
-                      lon_query[2], lat_query[2], sep = ",")
+    
+    box_lims <- bounding_shape |> 
+      #Get bounding box
+      st_bbox() |> 
+      #Transform to vector
+      as.vector() |> 
+      #Rounding coordinates to 2 decimal places
+      round(2) |> 
+      #Format data for query
+      paste(collapse = ",")
+    
+    #Add limits to query
     if(is.null(query_list)){
       query_list <- str_c("bbox=", box_lims)
     }else{
       query_list <- str_c(query_list, "&bbox=", box_lims)
     }
-  }else if(exists("lon_query") & !exists("lat_query")){
-    print("Latitudinal limits not provided, cannot apply a bounding box.")
-  }else if(!exists("lon_query") & exists("lat_query")){
-    print("Longitudinal limits not provided, cannot apply a bounding box.")
-  }
-  
-  #Add format
-  if(is.null(query_list)){
-    query_list <- str_c("f=netcdf")
   }else{
-    query_list <- str_c(query_list, "&f=netcdf")
-  }
+    #Check if spatial limits were provided
+    #Longitudinal limits
+    if(!is.null(lon_limits)){
+      #Ensure vector provided is numeric, otherwise print error
+      if(is.numeric(lon_limits) == F){
+        lon_limits <- tryCatch(expr = as.numeric(lon_limits),
+                               warning = function(w){
+                                 stop("Longitudinal limits provided are not numbers")})
+        if(sum(is.na(lon_limits)) > 0){
+          stop("Longitudinal limits provided are not numbers")}
+      }
+      lon_query <- sort(lon_limits)
+    }
+    
+    #Latitudinal limits
+    if(!is.null(lat_limits)){
+      #Ensure vector provided is numeric, otherwise print error
+      if(is.numeric(lat_limits) == F){
+        lat_limits <- tryCatch(expr = as.numeric(lat_limits),
+                               warning = function(w){
+                                 stop("Latitudinal limits provided are not numbers")})
+        if(sum(is.na(lat_limits)) > 0){
+          stop("Latitudinal limits provided are not numbers")}
+      }
+      lat_query <- sort(lat_limits)
+    }
+    
+    #If temporal limits provided, add to URL query
+    if(exists("lon_query") & exists("lat_query")){
+      box_lims <- paste(lon_query[1], lat_query[1], 
+                        lon_query[2], lat_query[2], sep = ",")
+      if(is.null(query_list)){
+        query_list <- str_c("bbox=", box_lims)
+      }else{
+        query_list <- str_c(query_list, "&bbox=", box_lims)
+      }
+    }else if(exists("lon_query") & !exists("lat_query")){
+      print("Latitudinal limits not provided, cannot apply a bounding box.")
+    }else if(!exists("lon_query") & exists("lat_query")){
+      print("Longitudinal limits not provided, cannot apply a bounding box.")
+    }}
+    
+    #Add format
+    if(is.null(query_list)){
+      query_list <- str_c("f=netcdf")
+    }else{
+      query_list <- str_c(query_list, "&f=netcdf")
+    }
   
   #Get URL ready
   url <- str_c(url, query_list) 
@@ -357,6 +369,12 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
   t_file <- tempfile("raster_dms_", fileext = ".nc")
   
   #Download data as temporary file
+  con <- request(url) |>
+    #Pass access token
+    req_auth_bearer_token(access_token) |> 
+    #Download as temporary file
+    req_perform()
+  
   request(url) |>
     #Pass access token
     req_auth_bearer_token(access_token) |> 
