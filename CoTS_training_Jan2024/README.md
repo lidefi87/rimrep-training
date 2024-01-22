@@ -5,6 +5,24 @@
 
 To use the [GBR Data Management System (DMS)](https://stac.reefdata.io/browser/?.language=en) to extract and analyse data (point or time series data) from selected datasets hosted in the DMS. Note that you will need to have a GBR DMS account to access data.  
   
+## Agenda Tuesday, January 23 2024
+  
+| Time | Activity |
+|-------|:---------------------------------------------------------------|
+| 10:00 | Introduction and workshop goals.                               |
+| 10:15 | The GBR Data Management System (DMS): What is it and services available |
+| 10:30 | Morning tea                                                   |
+| 10:45 | First example: Extracting eReefs model outptus                |
+| 12:00 | Lunch break                                                   |
+| 13:00 | How to work with the DMS data API                             |
+| 14:00 | Second example: Combine data sources, and spatial filtering       |
+| 15:30 | Afternoon tea break                                           |
+| 15:45 | Third example: LTMP data. Specific examples from participants |
+| 16:39 | Feedback and conclusions                                      |
+| 17:00 | Closure                                                       |
+
+**NOTE:** Please read the [Pre-event Instructions](https://github.com/aodn/rimrep-training/blob/main/Pre-Event%20Instructions.pdf) before you attend the workshop to avoid delays on the day. It is likely that you will need to install some `R` packages in your computer to run the examples.  
+  
 ## How to use DMS services and data
 
 The GBR DMS provides three ways to search for public data: a **metadata catalogue**, a **public AWS S3 repository of datasets**, and a **data API**. Click on the titles below to find more information about each of these methods.  
@@ -22,7 +40,11 @@ In the DMS, you can search for datasets by their name or using keywords. This se
 
 <details>
 <summary><b>The AWS S3 public repository</b></summary>
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tincidunt ligula eu ligula fermentum aliquet. Donec gravida urna et sapien dictum tristique. Pellentesque sed nunc ut dolor dignissim iaculis. Sed quam dui, gravida nec eros eget, tincidunt aliquet arcu. Vestibulum sollicitudin neque at sem accumsan porta. Etiam ipsum quam, vehicula quis laoreet vitae, pellentesque quis erat. Morbi tincidunt tincidunt nisl eget sagittis. Vivamus pulvinar elit in enim hendrerit, eget varius metus tincidunt. Sed leo neque, feugiat ac diam a, mollis elementum libero. Nulla vitae ex ac purus consequat blandit. In dui libero, condimentum sed commodo at, interdum vitae erat. Nullam consequat magna in fermentum semper. Quisque tortor urna, imperdiet sit amet luctus nec, iaculis at mauris.
+All DMS datasets are stored in an Amazon AWS S3 public repository. If you know the location of the collection (the S3 URI) you can use this address to connect directly with the dataset. The S3 URI is provided in the [STAC](<https://stac.reefdata.io/browser/>) *item* page inside a **collection**.
+
+![](images/clipboard-3883780758.png)
+
+</details>
 
 </details>
 
@@ -35,7 +57,13 @@ If you need access to the API services, contact the DMS team by emailing [info-d
   
 ### Using the data API: How to get an access token
 
-You can generate an access token using command line commands or inside your code. Note that the access token is only valid for one hour, so it is possible that you need to request a new token for each new API call.
+For human users, you need to login into the DMS system accessing the [login dashboard](https://dashboard.reefdata.io). Then, go to the same page again and copy the access token. You are ready to paste the token value into a variable, preferably, an environment variable.  
+  
+![](images/clipboard-2491887232.png)
+  
+If you are planning to use a Machine-to-Machine workflow, there are several ways you can request an access token. The DMS admin needs to create a "machine client" for you and provide user credentials: `client_id` and `client_secret`. These credentials should not be shared with others, you must store them in a secure way. Once you have your user credentials, you can generate an **access token** using command line commands or inside your code. Note that the **access token** is only valid for one hour, so it is possible that you need to request a new token for each new API call.  
+  
+Below, we include instructions about how to create this **access token** using different languages:
   
 <details>
 <summary><b>R</b></summary>
@@ -164,5 +192,4 @@ In this workshop, we will use the following datasets:
 | GBRMPA - Geomorphic Map                                                                        | https://stac.reefdata.io/browser/collections/gbrmpa-admin-regions/items/gbrmpa-geomorphic-map               | s3://gbr-dms-data-public/gbrmpa-geomorphic-map/data.zarr                             | https://pygeoapi.reefdata.io/collections/gbrmpa-geomorphic-map                             | Public         |
 | Geoscience Australia - High-resolution depth model for the GBR (30m)                           | https://stac.reefdata.io/browser/collections/ga-gbr-hr-depth-model/items/ga-bathymetry-gbr-30m              | s3://gbr-dms-data-public/ga-bathymetry-gbr-30m/data.zarr                             | https://pygeoapi.reefdata.io/collections/ga-bathymetry-gbr-30m                             | Public         |
 | IMOS - Satellite Remote Sensing Aqua Ocean Colour Chlorophyll-a (4km)                          | https://stac.reefdata.io/browser/collections/imos-satellite-remote-sensing/items/imos-srs-aqua-oc-chla-4km  | s3://gbr-dms-data-public/imos-srs-aqua-oc-chla-4km/data.zarr                         | https://pygeoapi.reefdata.io/collections/imos-srs-aqua-oc-chla-4km                         | Public         |
-
 
