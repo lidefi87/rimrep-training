@@ -65,7 +65,7 @@ data_df |>
   #Note that we need to write the variable exactly as it is showing above
   filter(variable == "Large fishes") |> 
   #We select the date column
-  #select(date) |> 
+  select(date) |> 
   #Turn the string to date type
   mutate(date = ymd(date)) |> 
   #Now we will get the minimum and maximum dates
@@ -74,20 +74,18 @@ data_df |>
 ```
   
 We can continue exploring the dataset this way before we decide the data that is relevant to us. This helps us avoid downloading large datasets to our machines. For this exercise, we will load data for `Large fishes` collected in 2023 only.  
-
-This particular dataset contains a variable called `geometry`. It is an add-on that the DMS created to allow you to extract data using specific geometry filters (like bounding boxes). If you don't plan to use the geometry field, it is better to filter it out at the beginning of any query, so the extraction of the data will be more efficient 
   
 ```{r}
 large_fishes_23 <- data_df |> 
   #Remove geometry field. This is a big object and it will slow any process
   select(!geometry) |> 
   #Note that we need to write the variable exactly as it is showing above
-  filter(variable == "Large fishes") |> # & reef_zone == "North") |> 
+  filter(variable == "Large fishes") |> 
   #Turn the string to date type
-   mutate(date = ymd(date), 
-          #Add a year column so we can filter data easily
-          year = year(date),
-          month = month(date)) |> 
+  mutate(date = ymd(date), 
+         #Add a year column so we can filter data easily
+         year = year(date),
+         month = month(date)) |> 
   filter(year == 2023) |> 
   collect()
 
@@ -115,5 +113,3 @@ large_fishes_23 |>
 ```
   
 As with the other examples, you are able to save any summarised data our outputs to your computer.  
-  
-
