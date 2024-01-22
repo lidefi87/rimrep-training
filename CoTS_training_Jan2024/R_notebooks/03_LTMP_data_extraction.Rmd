@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ---
 title: "Extracting data from LTMP model"
 author: "Denisse Fierro Arcos"
