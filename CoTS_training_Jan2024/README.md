@@ -7,7 +7,7 @@ To use the [GBR Data Management System (DMS)](https://stac.reefdata.io/browser/?
   
 ## Agenda Tuesday, January 23 2024
   
-| Time | Activity |
+| Time  | Activity |
 |-------|:---------------------------------------------------------------|
 | 10:00 | Introduction and workshop goals.                               |
 | 10:15 | The GBR Data Management System (DMS): What is it and services available |
@@ -18,7 +18,7 @@ To use the [GBR Data Management System (DMS)](https://stac.reefdata.io/browser/?
 | 14:00 | Second example: Combine data sources, and spatial filtering       |
 | 15:30 | Afternoon tea break                                           |
 | 15:45 | Third example: LTMP data. Specific examples from participants |
-| 16:39 | Feedback and conclusions                                      |
+| 16:30 | Feedback and conclusions                                      |
 | 17:00 | Closure                                                       |
 
 **NOTE:** Please read the [Pre-event Instructions](https://github.com/aodn/rimrep-training/blob/main/Pre-Event%20Instructions.pdf) before you attend the workshop to avoid delays on the day. It is likely that you will need to install some `R` packages in your computer to run the examples.  
@@ -135,9 +135,9 @@ access_token = response.json().get("access_token")
 
 We will be working on the following use case examples:  
 
-1. [Extract time series from eReef model outputs using a shapefile for a reef from the GBR features dataset](https://github.com/aodn/rimrep-training/blob/main/CoTS_training_Jan2024/R_notebooks/01_eReef_data_extraction.Rmd).  
-2. [Extract and calculate average values for eReef model variables for an area defined by a bounding box within a specified time frame](https://github.com/aodn/rimrep-training/blob/main/CoTS_training_Jan2024/R_notebooks/02_eReef_maps_timeseries.Rmd).  
-3. [Extract a time series from LTMP/MMP model output for a particular reef or list of reefs](https://github.com/aodn/rimrep-training/blob/main/CoTS_training_Jan2024/R_notebooks/03_LTMP_data_extraction.Rmd).  
+1. [Extract a time series from LTMP/MMP model output for a particular reef or list of reefs](https://github.com/aodn/rimrep-training/blob/main/CoTS_training_Jan2024/R_notebooks/01_LTMP_data_extraction.Rmd).  
+2. [Extract time series from eReef model outputs using a shapefile for a reef from the GBR features dataset](https://github.com/aodn/rimrep-training/blob/main/CoTS_training_Jan2024/R_notebooks/03_eReef_data_extraction.Rmd).  
+3. [Extract and calculate average values for eReef model variables for an area defined by a bounding box within a specified time frame](https://github.com/aodn/rimrep-training/blob/main/CoTS_training_Jan2024/R_notebooks/03_eReef_maps_timeseries.Rmd).  
 
 ## Notebooks
 
