@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Crown of Thorns Starfish (CoTS) Use Case Training Workshop
 
 ### 23 January 2024
@@ -6,6 +6,10 @@
 ## Goal
 
 To use the [GBR Data Management System (DMS)](https://stac.reefdata.io/browser/?.language=en) to extract and analyse data (point or time series data) from selected datasets hosted in the DMS. Note that you will need to have a GBR DMS account to access data.
+
+## Agenda tuesday 23 January 2024
+
+
 
 ## How to use DMS services and data
 
