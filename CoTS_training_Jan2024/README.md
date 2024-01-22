@@ -8,8 +8,10 @@ To use the [GBR Data Management System (DMS)](https://stac.reefdata.io/browser/?
 
 ## Agenda Tuesday 23 January 2024
 
+
+| Time | Activity |
+|-------|:---------------------------------------------------------------|
 | 10:00 | Introduction. Workshop Goals                                  |
-|-------|---------------------------------------------------------------|
 | 10:15 | The GBR Data Management System: What is, what services        |
 | 10:30 | Morning tea                                                   |
 | 10:45 | First example: Extracting eReefs model data                   |
@@ -21,6 +23,7 @@ To use the [GBR Data Management System (DMS)](https://stac.reefdata.io/browser/?
 | 16:39 | Review and conclusions                                        |
 | 17:00 | Closure                                                       |
 
+**NOTE:** Please read the [Pre-event Instructions](https://github.com/aodn/rimrep-training/blob/main/Pre-Event%20Instructions.pdf) before the workshop day. You probably need to install some packages to run the examples
 
 
 ## How to use DMS services and data
