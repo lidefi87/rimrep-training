@@ -14,12 +14,13 @@ To use the [GBR Data Management System (DMS)](https://stac.reefdata.io/browser/?
 | 10:30 | Morning tea                                                   |
 | 10:45 | 1. Exploring the DMS catalogue and discovering datasets       |
 |       | 2. How to write a shareable R script                          |
-|       | 3. Errors: How to understand them, report them and how to get help |
+|       | 3. How to understand and report errors in R                   |
+|       | 4. How to ask for help: The importance of reproducible examples |
 | 12:00 | Lunch break                                                   |
 | 13:00 | How to work with the DMS data API                             |
 | 14:00 | Breaking code: Adapting examples to your needs       |
 | 15:30 | Afternoon tea break                                           |
-| 15:45 | How to ask for help: The importance of reproducible examples  |
+| 15:45 |   |
 | 16:30 | Feedback and conclusions                                      |
 | 17:00 | Closure                                                       |
 
@@ -65,7 +66,7 @@ For human users, you need to login into the DMS system by accessing the [login](
   
 If you are planning to use a Machine-to-Machine workflow, there are several ways you can request an access token. The DMS admin needs to create a "machine client" for you and provide user credentials: `client_id` and `client_secret`. These credentials should not be shared with others, you must store them in a secure way. Once you have your user credentials, you can generate an **access token** using command line commands or inside your code. Note that the **access token** is only valid for one hour, so it is possible that you need to request a new token for each new API call.  
   
-Below, we include instructions about how to create this **access token** using different languages:
+Below, we include instructions about how to create this **access token** in `R` and the command line:
   
 <details>
 <summary><b>R</b></summary>
@@ -100,48 +101,16 @@ ACCESS_TOKEN=$(curl --location --request POST "https://keycloak.reefdata.io/real
   --data-urlencode "grant_type=client_credentials" | jq -r '.["access_token"]')
 ```
 </details>
-  
-<details>
-<summary><b>Python</b></summary>
-  
-Assuming that `CLIENT_ID` and `CLIENT_SECRET` are already defined as environment variables, you can use the code below to get the access token: 
-
-```python
-import requests
-import os
-
-client_id = os.environ["CLIENT_ID"]
-client_secret = os.environ["CLIENT_SECRET"]
-
-# Get the access token
-url = "https://keycloak.reefdata.io/realms/rimrep-production/protocol/openid-connect/token"
-headers = {"Content-Type": "application/x-www-form-urlencoded"}
-data = {
-    "client_id": client_id,
-    "client_secret": client_secret,
-    "grant_type": "client_credentials",
-}
-response = requests.post(url, headers=headers, data=data)
-
-assert response.status_code == 200, response.text
-
-access_token = response.json().get("access_token")
-
-```
-</details>
-
 </details>
 
 
 ## Use case examples
 
 We will be working on the following use case examples:  
-
-**TBD** 
-1. 
-2. 
-3. 
-
+1. Extract a time series for a variable of interest for a point, reef, or region  
+2. Calculate the Maximum Monthly Mean (MMM) for sea surface temperature (SST)  
+3. Calculate DHW and DHD for a reef or region  
+  
 ## Notebooks
 
 Example notebooks for this workshop were developed in `R` because it is the most widely used programming language within the RHR team. However, the DMS can also be accessed using `Python`, you can see some examples in [this repository](https://github.com/aodn/rimrep-examples/tree/main/Python_based_scripts). Before running these `R` notebooks, make sure you have installed all libraries used in this workshop.  
