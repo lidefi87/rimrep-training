@@ -9,7 +9,7 @@ To use the [GBR Data Management System (DMS)](https://stac.reefdata.io/browser/?
   
 | Time  | Activity |
 |-------|:---------------------------------------------------------------|
-| 10:00 | Introduction and workshop goals.                               |
+| 10:00 | Introduction and workshop goals                               |
 | 10:15 | The GBR Data Management System (DMS): What is it and services available |
 | 10:30 | Morning tea                                                   |
 | 10:45 | 1. Exploring the DMS catalogue and discovering datasets       |
@@ -18,9 +18,11 @@ To use the [GBR Data Management System (DMS)](https://stac.reefdata.io/browser/?
 |       | 4. How to ask for help: The importance of reproducible examples |
 | 12:00 | Lunch break                                                   |
 | 13:00 | How to work with the DMS data API                             |
-| 14:00 | Breaking code: Adapting examples to your needs       |
+| 14:00 | 1. How to extract time series from raster and tabular datasets|
+|       | 2. How to calculate the SST Maximum Monthly Mean (MMM)        |
+|       | 3. How to calculate DHW and DHD                               |
 | 15:30 | Afternoon tea break                                           |
-| 15:45 |   |
+| 15:45 | Breaking code: Adapting examples to your needs                |
 | 16:30 | Feedback and conclusions                                      |
 | 17:00 | Closure                                                       |
 
@@ -148,4 +150,5 @@ In this workshop, we will use the following datasets:
 
 | Dataset Title                                                                                  | STAC Metadata URL                                                                                           | s3 URI                                                                               | Pygeoapi URL                                                                               | Security       |
 |------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|----------------|
+| NOAA - Coral Reef Watch Sea Surface Temperature (CoralTemp) | https://stac.reefdata.io/browser/collections/noaa-crw/items/noaa-crw-chs-sst?.language=en-AU | s3://gbr-dms-data-public/noaa-crw-chs-sst/data.zarr | https://pygeoapi.reefdata.io/collections/noaa-crw-chs-sst  |        |
 
