@@ -12,7 +12,9 @@ To use the [GBR Data Management System (DMS)](https://stac.reefdata.io/browser/?
 | 10:00 | Introduction and workshop goals.                               |
 | 10:15 | The GBR Data Management System (DMS): What is it and services available |
 | 10:30 | Morning tea                                                   |
-| 10:45 | First example: TBD              |
+| 10:45 | 1. Exploring the DMS catalogue and discovering datasets       |
+|       | 2. How to write a shareable R script                          |
+|       | 3. Errors: How to understand them, report them and how to get help |
 | 12:00 | Lunch break                                                   |
 | 13:00 | How to work with the DMS data API                             |
 | 14:00 | Breaking code: Adapting examples to your needs       |
