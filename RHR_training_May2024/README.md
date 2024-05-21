@@ -12,12 +12,12 @@ To use the [GBR Data Management System (DMS)](https://stac.reefdata.io/browser/?
 | 10:00 | Introduction and workshop goals.                               |
 | 10:15 | The GBR Data Management System (DMS): What is it and services available |
 | 10:30 | Morning tea                                                   |
-| 10:45 | First example: TBF              |
+| 10:45 | First example: TBD              |
 | 12:00 | Lunch break                                                   |
 | 13:00 | How to work with the DMS data API                             |
-| 14:00 | Second example: TBD       |
+| 14:00 | Breaking code: Adapting examples to your needs       |
 | 15:30 | Afternoon tea break                                           |
-| 15:45 | Third example: TBD  |
+| 15:45 | How to ask for help: The importance of reproducible examples  |
 | 16:30 | Feedback and conclusions                                      |
 | 17:00 | Closure                                                       |
 
@@ -162,8 +162,8 @@ Note that the credentials must be given within quotation marks, for example: `"c
 Setting environmental variables in this way will only save them for the duration of your `R` session. If you would like to store them permanently, you can use `usethis::edit_r_environ()` function. This will open a file called `.Renviron` in a new tab in your RStudio session. Copy and paste your credentials as shown below.  
   
 ```
-"CLIENT_ID" = "paste_CLIENT_ID_here"
-"CLIENT_SECRET" = "paste_CLIENT_SECRET_here"
+CLIENT_ID = "paste_CLIENT_ID_here"
+CLIENT_SECRET = "paste_CLIENT_SECRET_here"
 ```
   
 Save your changes, close the tab, and restart your `R` session for changes to take effect.  
