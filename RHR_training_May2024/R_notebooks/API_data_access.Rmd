@@ -1,0 +1,193 @@
+---
+title: "Extracting gridded data via the API"
+author: "Denisse Fierro Arcos"
+date: "2024-05-20"
+output:
+  pdf_document:
+    toc: true
+---
+
+# Extracting sea surface temperature from NOAA Coral Reef Watch
+
+The [NOAA Coral Reef Watch Sea Surface Temperature (CRW SST)](https://coralreefwatch.noaa.gov/) is a high resolution (5 km) dataset that provides daily SST data for coral reef monitoring. This dataset is available in the DMS under the [**NOAA Coral Reef Watch** collection](https://stac.reefdata.io/browser/collections/noaa-crw). In this notebook, we will use access this dataset using the API. We will also show how to extract data for a specific area using a bounding box derived from a shapefile. For this step, we will use one of the geometries available in the GBR Complete Features shapefile, which is also available in the [DMS](https://stac.reefdata.io/browser/collections/gbrmpa-admin-regions/items/gbrmpa-complete-gbr-features). 
+  
+## Loading libraries
+  
+```{r, message = F, warning = F, message = F}
+#Loading useful_functions script
+source("useful_functions.R")
+#Gridded data
+library(terra)
+library(tidyterra)
+#Shapefiles
+library(sf)
+#Base maps
+library(rnaturalearth)
+#Data manupulation
+library(tibble)
+library(tidyr)
+```
+  
+## Loading Whitsunday features from GBR shapefile
+We will use the GBR features here, but we will only load boundaries for the Whitsunday for this exercise. However, the function loading these GBR features can load the entire shapefile or any other GBR feature.  
+  
+```{r}
+#Loading boundaries for Whitsundays
+whitsundays <- gbr_features(site_name = "Whitsunday")
+
+#Checking results of query
+whitsundays
+```
+  
+## Connecting to RIMREP collection via API
+
+From the STAC catalogue item for the [NOAA CRW SST](https://stac.reefdata.io/browser/collections/noaa-crw/items/noaa-crw-chs-sst?.language=en-AU), we can get the link to the API from the *Additional Resources* section of the page on the left under the map.  
+  
+**Note:** Before running the code chunk below, make sure you either have store your user credentials as environmental variables, or have this information with you to input in the `connect_dms_dataset` function below. Alternatively, if you already have an access token, you can provide this as an input in the `connect_dms_dataset` function. Refer to **The data API** subsection under **How to use DMS services and data** in the [README page](https://github.com/aodn/rimrep-training/blob/main/CoTS-training-Jan2024/README.md) for more information.  
+  
+If you do not user credentials, you will not be able to access our API, please contact the DMS team to set up an account by emailing [info-dms@utas.edu.au](mailto:info-dms@utas.edu.au).  
+    
+```{r}
+#Defining API URL (obtained from STAC catalogue)
+base_url <- "https://pygeoapi.reefdata.io/collections/noaa-crw-chs-sst/"
+
+#Defining variable of interest (obtained from STAC catalogue)
+variable_name <- "analysed_sst"
+
+#Connecting to DMS and downloading data
+sst_gbr <- connect_dms_dataset(base_url, variable_name, 
+                               start_time = '2019-01-01', 
+                               end_time = '2023-12-31',
+                               bounding_shape = whitsundays)
+```
+  
+## Plotting data 
+We will plot the first layer of this raster in a map to check the temperature data.  
+  
+```{r}
+#Get map of Australia
+aust <- ne_countries(country = "Australia", returnclass = "sf")
+
+#Start a plot
+ggplot()+
+  #Plot one raster layer
+  geom_spatraster(data = sst_gbr$analysed_sst_1)+
+  #Choose a nicer palette for our map
+  scale_fill_distiller(palette = "YlOrRd", name = "SST")+
+  #Add Australia
+  geom_sf(data = aust)+
+  #Add Whitsundays
+  geom_sf(data = whitsundays, fill = NA, colour = "black")+
+  #Establish map limits
+  lims(x = c(148, 150), y = c(-20.5, -20))+
+  #Apply a nice predefined theme
+  theme_bw()+
+  #Add a title
+  labs(title = "Sea Surface Temperature")+
+  #Center the plot title
+  theme(plot.title = element_text(hjust = 0.5))
+```
+  
+The grey areas are land areas without any temperature data.  
+
+## Calculating monthly sea surface temperature mean
+We will calculate the monthly mean of the sea surface temperature for the reefs surrounding the Whitsunday Island. The result will be gridded data.  
+  
+```{r}
+#Extract time label
+time_sst <- time(sst_gbr)
+
+#Since we want to calculate the monthly mean, we will get the month and year
+#from the time label
+mystamp <- stamp("2020-01", order = "%Y-%m")
+yr_mth <- mystamp(time_sst) |> 
+  unique()
+
+#Create empty vector to store results
+sst_mean <- c()
+#We will loop through each month/year and calculate the mean
+for(ym in yr_mth){
+  #Subset data for the month
+  sst_month <- mean(sst_gbr[[str_detect(time_sst, ym)]], na.rm = T)
+  #Update name of layer
+  names(sst_month) <- paste("mean_sst", ym, sep = "_")
+  #Update time information
+  time(sst_month) <- ym(ym)
+  #Store the result
+  sst_mean <- append(sst_mean, sst_month)
+}
+
+#Checking result
+sst_mean
+```
+  
+We can see that the number of layers in the raster was reduced from `r nlyr(sss_gbr)` in the original raster downloaded from the API to `r nlyr(sst_mean)` when the monthly means were calculated.  
+
+We can now plot the monthly mean for the sea surface temperature. We will do this for the first layer.  
+  
+```{r}
+#Start a plot
+ggplot()+
+  #Plot one raster layer
+  geom_spatraster(data = sst_mean$`mean_sst_2019-01`)+
+  #Choose a nicer palette for our map
+  scale_fill_distiller(palette = "YlOrRd", name = "mean SST")+
+  #Add Australia
+  geom_sf(data = aust)+
+  #Add Whitsundays
+  geom_sf(data = whitsundays, fill = NA, colour = "black")+
+  #Establish map limits
+  lims(x = c(148, 150), y = c(-20.5, -20))+
+  #Apply a nice predefined theme
+  theme_bw()+
+  #Add a title
+  labs(title = "Mean SST")+
+  #Center the plot title
+  theme(plot.title = element_text(hjust = 0.5))
+```
+    
+## Calculating monthly sea surface temperature mean over area of interest
+We can also obtain a time series by calculating a mean over the interest area of interest. We will use the Whitsunday Island monthly SST.  
+  
+```{r}
+#Calculating mean over area of interest
+sst_ts <- global(sst_mean, fun = mean, na.rm = T) |> 
+  #Adding time information
+  mutate(time = ym(yr_mth))
+
+#Plotting time series
+sst_ts |> 
+  ggplot(aes(x = time, y = mean))+
+  geom_line()+
+  scale_x_date(date_breaks = "6 month", date_labels = "%Y-%m")+
+  theme_bw()+
+  labs(title = "Monthly SST mean over Whitsunday Island",
+       y = "Sea Surface Temperature (°C)")+
+  theme(axis.title.x = element_blank())
+```
+    
+## Calculating Maximum Monthly Mean (MMM)
+The Maximum Monthly Mean (MMM) is a metric used to assess the bleaching potential of the sea surface temperature. It is calculated as the maximum monthly mean of the sea surface temperature over a 30-year period. 
+
+However, for this example we will use the 5-year SST data for Whitsunday Island.  
+  
+```{r}
+mmm <- sst_ts |> 
+  mutate(month = month(time, label = T)) |> 
+  #Group by month
+  group_by(month) |>
+  #Identify the maximum monthly mean
+  summarise(max_monthly_mean = max(mean)) |> 
+  rownames_to_column()
+
+mmm |> 
+  ggplot(aes(month, max_monthly_mean, group = 1))+
+  geom_line()+
+  theme_bw()+
+  labs(title = "MMM for Whitsunday Island",
+       y = "Sea Surface Temperature (°C)")+
+  theme(axis.title.x = element_blank())
+```
+
+
+  

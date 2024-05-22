@@ -9,41 +9,28 @@ To use the [GBR Data Management System (DMS)](https://stac.reefdata.io/browser/?
 ### Venue: GBRMPA headquarters
 
 ## Agenda Tuesday, May 24 2024
+  
+| Time  | Activity |
+|-------|:---------------------------------------------------------------|
+| 10:00 | Introduction and workshop goals                               |
+| 10:15 | The GBR Data Management System (DMS): What is it and services available |
+| 10:30 | Morning tea                                                   |
+| 10:45 | 1. Exploring the DMS catalogue and discovering datasets       |
+|       | 2. How to write a shareable R script                          |
+|       | 3. How to understand and report errors in R                   |
+|       | 4. How to ask for help: The importance of reproducible examples |
+| 12:00 | Lunch break                                                   |
+| 13:00 | How to work with the DMS data API                             |
+| 14:00 | 1. How to extract time series from raster and tabular datasets|
+|       | 2. How to calculate the SST Maximum Monthly Mean (MMM)        |
+|       | 3. How to calculate DHW and DHD                               |
+| 15:30 | Afternoon tea break                                           |
+| 15:45 | Breaking code: Adapting examples to your needs                |
+| 16:30 | Feedback and conclusions                                      |
+| 17:00 | Closure                                                       |
 
-+------------+-------------------------------------------------------------------------+
-| Time       | Activity                                                                |
-+============+:========================================================================+
-| 10:00      | Introduction and workshop goals.                                        |
-+------------+-------------------------------------------------------------------------+
-| 10:15      | The GBR Data Management System (DMS): What is it and services available |
-+------------+-------------------------------------------------------------------------+
-| 10:30      | Morning tea                                                             |
-+------------+-------------------------------------------------------------------------+
-| 10:45      | 1.  Exploring the DMS catalogue and discovering datasets                |
-|            |                                                                         |
-|            | 2.  How to make a robust R code                                         |
-|            |                                                                         |
-|            | 3.  How to understand and report errors and get help                    |
-+------------+-------------------------------------------------------------------------+
-| 12:00      | Lunch break                                                             |
-+------------+-------------------------------------------------------------------------+
-| 13:00      | How to work with the DMS data API                                       |
-+------------+-------------------------------------------------------------------------+
-| 14:00      | 1.  How to extract time series from raster and tabular datasets         |
-|            | 2.  How to calculate the SST Maximum Monthly Mean (MMM)                 |
-|            | 3.  How to calculate DHW and DHD                                        |
-+------------+-------------------------------------------------------------------------+
-| 15:30      | Afternoon tea break                                                     |
-+------------+-------------------------------------------------------------------------+
-| 15:45      | How to extract data from a selected reef or region                      |
-+------------+-------------------------------------------------------------------------+
-| 16:30      | Feedback and conclusions                                                |
-+------------+-------------------------------------------------------------------------+
-| 17:00      | Closure                                                                 |
-+------------+-------------------------------------------------------------------------+
-
-**NOTE:** Please read the [Pre-event Instructions](https://github.com/aodn/rimrep-training/blob/main/Pre-Event%20Instructions.pdf) before you attend the workshop to avoid delays on the day. You will likely need to install some `R` packages on your computer to run the examples.
-
+**NOTE:** Please read the [Pre-event Instructions](https://github.com/aodn/rimrep-training/blob/main/Pre-Event%20Instructions.pdf) before you attend the workshop to avoid delays on the day. You will likely need to install some `R` packages on your computer to run the examples.  
+ 
 ## How to use DMS services and data
 
 The GBR DMS provides three ways to search for public data: a **metadata catalogue**, a **public AWS S3 repository of datasets**, and a **data API**. Click on the titles below to find more information about each of these methods.
@@ -85,11 +72,11 @@ If you need access to the API services, contact the DMS team by emailing [info-d
 For human users, you need to login into the DMS system by accessing the [login](https://dashboard.reefdata.io) dashboard](<https://dashboard.reefdata.io>). Then, go to the same page again and copy the access token. You are ready to paste the token value into a variable, preferably an environment variable.
 
 ![](images/clipboard-2491887232.png)
-
-If you are planning to use a Machine-to-Machine workflow, there are several ways you can request an access token. The DMS admin needs to create a "machine client" for you and provide user credentials: `client_id` and `client_secret`. These credentials should not be shared with others, you must store them in a secure way. Once you have your user credentials, you can generate an **access token** using command line commands or inside your code. Note that the **access token** is only valid for one hour, so it is possible that you need to request a new token for each new API call.
-
-Below, we include instructions about how to create this **access token** using different languages:
-
+  
+If you are planning to use a Machine-to-Machine workflow, there are several ways you can request an access token. The DMS admin needs to create a "machine client" for you and provide user credentials: `client_id` and `client_secret`. These credentials should not be shared with others, you must store them in a secure way. Once you have your user credentials, you can generate an **access token** using command line commands or inside your code. Note that the **access token** is only valid for one hour, so it is possible that you need to request a new token for each new API call.  
+  
+Below, we include instructions about how to create this **access token** in `R` and the command line:
+ 
 <details>
 
 <summary><b>R</b></summary>
@@ -124,35 +111,6 @@ ACCESS_TOKEN=$(curl --location --request POST "https://keycloak.reefdata.io/real
   --data-urlencode "grant_type=client_credentials" | jq -r '.["access_token"]')
 ```
 
-</details>
-
-<details>
-
-<summary><b>Python</b></summary>
-
-Assuming that `CLIENT_ID` and `CLIENT_SECRET` are already defined as environment variables, you can use the code below to get the access token:
-
-``` python
-import requests
-import os
-
-client_id = os.environ["CLIENT_ID"]
-client_secret = os.environ["CLIENT_SECRET"]
-
-# Get the access token
-url = "https://keycloak.reefdata.io/realms/rimrep-production/protocol/openid-connect/token"
-headers = {"Content-Type": "application/x-www-form-urlencoded"}
-data = {
-    "client_id": client_id,
-    "client_secret": client_secret,
-    "grant_type": "client_credentials",
-}
-response = requests.post(url, headers=headers, data=data)
-
-assert response.status_code == 200, response.text
-
-access_token = response.json().get("access_token")
-```
 
 </details>
 
@@ -160,17 +118,18 @@ access_token = response.json().get("access_token")
 
 ## Use case examples
 
+## Notebooks
+Example notebooks for this workshop were developed in `R` because it is the most widely used programming language within the RHR team. However, the DMS can also be accessed using `Python`, you can see some examples in [this repository](https://github.com/aodn/rimrep-examples/tree/main/Python_based_scripts). 
+Before running these `R` notebooks, make sure you have installed all libraries used in this workshop.
+  
 We will be working on the following use case examples:
 
-1.  Extract time series of variables from a point, reef or region
-2.  Extract or calculate the SST Maximum Monthly Mean (MMM)
-3.  Calculate DHW and DHD for a reef or region
-
-## Notebooks {#notebooks}
-
-Example notebooks for this workshop were developed in `R` because it is the most widely used programming language within the RHR team. However, the DMS can also be accessed using `Python`, you can see some examples in [this repository](https://github.com/aodn/rimrep-examples/tree/main/Python_based_scripts). Before running these `R` notebooks, make sure you have installed all libraries used in this workshop.
+1. Extract a time series for a variable of interest for a point, reef, or region  
+2. Calculate the Maximum Monthly Mean (MMM) for sea surface temperature (SST)  
+3. Calculate DHW and DHD for a reef or region  
 
 To keep the DMS secure and to allow for different access levels to non-public datasets via the API, we provide DMS users with unique credentials. To access the API, users must generate an access token using their credentials. These token last one hour and while current, users are able to access any public datasets in the DMS, as well as any non-public dataset for which they have been granted permission. User credentials should be treated similar to passwords and they should not be shared.
+
 
 To ensure you do not accidentally share your user credentials within a script, we recommend that you store this information as environmental variables in `R`. You can create these environmental variables as follows:
 
@@ -182,14 +141,14 @@ Sys.setenv("CLIENT_SECRET" = "paste_CLIENT_SECRET_here")
 #Check environmental variable has been corrected created/updated
 Sys.getenv(c("CLIENT_ID", "CLIENT_SECRET"))
 ```
-
-Note that the credentials must be given within quotation marks, for example: `"client_id123"`. If you provide the token as `client_id123`, that is without quotation marks (`""`), you will get an error.
-
-Setting environmental variables in this way will only save them for the duration of your `R` session. If you would like to store them permanently, you can use `usethis::edit_r_environ()` function. This will open a file called `.Renviron` in a new tab in your RStudio session. Copy and paste your credentials as shown below.
-
-```         
-"CLIENT_ID" = "paste_CLIENT_ID_here"
-"CLIENT_SECRET" = "paste_CLIENT_SECRET_here"
+  
+Note that the credentials must be given within quotation marks, for example: `"client_id123"`. If you provide the token as `client_id123`, that is without quotation marks (`""`), you will get an error.   
+  
+Setting environmental variables in this way will only save them for the duration of your `R` session. If you would like to store them permanently, you can use `usethis::edit_r_environ()` function. This will open a file called `.Renviron` in a new tab in your RStudio session. Copy and paste your credentials as shown below.  
+  
+```
+CLIENT_ID = "paste_CLIENT_ID_here"
+CLIENT_SECRET = "paste_CLIENT_SECRET_here"
 ```
 
 Save your changes, close the tab, and restart your `R` session for changes to take effect.
@@ -198,10 +157,8 @@ Save your changes, close the tab, and restart your `R` session for changes to ta
 
 In this workshop, we will use the following datasets:
 
-**TBD**
 
-+---------------+-------------------+------------+--------------+------------+
-| Dataset Title | STAC Metadata URL | s3 URI     | Pygeoapi URL | Security   |
-+===============+===================+============+==============+============+
-|               |                   |            |              |            |
-+---------------+-------------------+------------+--------------+------------+
+| Dataset Title                                                                                  | STAC Metadata URL                                                                                           | s3 URI                                                                               | Pygeoapi URL                                                                               | Security       |
+|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|----------------|
+| NOAA - Coral Reef Watch Sea Surface Temperature (CoralTemp) | https://stac.reefdata.io/browser/collections/noaa-crw/items/noaa-crw-chs-sst?.language=en-AU | s3://gbr-dms-data-public/noaa-crw-chs-sst/data.zarr | https://pygeoapi.reefdata.io/collections/noaa-crw-chs-sst  |        |
+
