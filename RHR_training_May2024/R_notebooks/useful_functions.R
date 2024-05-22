@@ -399,3 +399,121 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
 }
 
 
+# Applying function to SpatRaster -----------------------------------------
+raster_calc <- function(ras, period, fun, na.rm = F){
+  ############
+  #This function uses the app function from terra to apply a function to a 
+  #SpatRaster object. Any functions accepted by app can be used here. Raster
+  #will be grouped either by year or month before applying the function.
+  #
+  #Inputs:
+  #ras (SpatRaster): Raster object to which the function will be applied. It 
+  #must contain a time dimension.
+  #period (character): Period for which the function will be applied. It can
+  #be either "monthly" or "yearly".
+  #fun (function): Function to be applied to the raster. It must be a function
+  #accepted by the app function from terra.
+  #na.rm (logical): If TRUE, NA values will be removed before applying the
+  #function. Default is FALSE.
+  
+  #Get the time information from the raster
+  time_ras <- time(ras)
+  
+  #Get units from the raster
+  units_ras <- units(ras) |> 
+    unique()
+  
+  #If period is monthly, we will get the month and year
+  if(period == "monthly"){
+    mystamp <- stamp("2020-01", order = "%Y-%m")
+    #Get unique values for month and year combinations
+    per_int <- mystamp(time_ras) |> 
+      unique()
+  }else if (period == "yearly"){
+    #Get unique values for year
+    per_int <- year(time_ras) |> 
+      unique() |> 
+      as.character()
+  }else{
+    stop("Period should be either 'monthly' or 'yearly'")
+  }
+  
+  #Initialise empty vector to store results
+  ras_out <- c()
+  
+  #Loop through each period of interest
+  for(t in per_int){
+    #Subset data for the period
+    ras_period <- ras[[str_detect(time_ras, t)]]
+    
+    #Apply function
+    ras_fun <- app(ras_period, fun, na.rm = na.rm)
+    
+    #Update variable name
+    varnames(ras_fun) <- paste(names(ras_fun), 
+                            varnames(ras_period),
+                            sep = "_")
+    
+    #New name for layer - including time
+    names(ras_fun) <- paste(names(ras_fun),
+                            t, sep = "_")
+    #Update time information
+    time(ras_fun) <- ifelse(period == "monthly", 
+                            ym(t), as.Date(paste0(t, "-01-01")))
+    
+    #Add units
+    units(ras_fun) <- units_ras
+    
+    #Store the result
+    ras_out <- append(ras_out, ras_fun)
+  }
+  
+  #Return SpatRaster
+  return(ras_out)
+}
+
+
+
+# Extracting time series from SpatRaster ----------------------------------
+ras_to_ts <- function(ras, fun, na.rm = F){
+  ############
+  #This function uses the global function from terra to calculate global 
+  #statistics from a SpatRaster object. Any functions accepted by global can
+  #be used here. It will also return the maximum monthly value of the time
+  #series
+  #
+  #Inputs:
+  #ras (SpatRaster): Raster object to which the function will be applied. It 
+  #must contain a time dimension.
+  #fun (function): Function to be applied to the raster. It must be a function
+  #accepted by the global function from terra.
+  #na.rm (logical): If TRUE, NA values will be removed before applying the
+  #function. Default is FALSE.
+  
+  #Get time information from raster
+  time_ras <- time(ras) |> 
+    #Transform to date format
+    as.Date()
+  #Get unit information from raster
+  unit_ras <- units(ras)
+  #Get the time series of the raster
+  ras_ts <- global(ras, fun = fun, na.rm = na.rm) |> 
+    #Add time and units to the time series
+    mutate(time = time_ras, unit = unit_ras) |> 
+    #Store rownmaes as column
+    rownames_to_column("layer_name")
+  
+  #Return maximum values per month
+  max_df <- ras_ts |>
+    mutate(month = month(time, label = T)) |>
+    #Group by month
+    group_by(month) |> 
+    #Identify the maximum monthly value
+    summarise(max_monthly_val = max(get(names(ras_ts)[2])))
+  
+  return(list(time_series = ras_ts,
+              max_monthly_ts = max_df))
+}
+
+
+
