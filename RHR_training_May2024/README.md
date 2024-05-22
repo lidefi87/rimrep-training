@@ -117,19 +117,16 @@ ACCESS_TOKEN=$(curl --location --request POST "https://keycloak.reefdata.io/real
 </details>
 
 ## Use case examples
-
-## Notebooks
-Example notebooks for this workshop were developed in `R` because it is the most widely used programming language within the RHR team. However, the DMS can also be accessed using `Python`, you can see some examples in [this repository](https://github.com/aodn/rimrep-examples/tree/main/Python_based_scripts). 
-Before running these `R` notebooks, make sure you have installed all libraries used in this workshop.
-  
 We will be working on the following use case examples:
 
 1. Extract a time series for a variable of interest for a point, reef, or region  
 2. Calculate the Maximum Monthly Mean (MMM) for sea surface temperature (SST)  
-3. Calculate DHW and DHD for a reef or region  
+3. Calculate DHW and DHD for a reef or region
 
+## Notebooks
+Example notebooks for this workshop were developed in `R` because it is the most widely used programming language within the RHR team. However, the DMS can also be accessed using `Python`, you can see some examples in [this repository](https://github.com/aodn/rimrep-examples/tree/main/Python_based_scripts). Before running these `R` notebooks, make sure you have installed all libraries used in this workshop.
+  
 To keep the DMS secure and to allow for different access levels to non-public datasets via the API, we provide DMS users with unique credentials. To access the API, users must generate an access token using their credentials. These token last one hour and while current, users are able to access any public datasets in the DMS, as well as any non-public dataset for which they have been granted permission. User credentials should be treated similar to passwords and they should not be shared.
-
 
 To ensure you do not accidentally share your user credentials within a script, we recommend that you store this information as environmental variables in `R`. You can create these environmental variables as follows:
 
