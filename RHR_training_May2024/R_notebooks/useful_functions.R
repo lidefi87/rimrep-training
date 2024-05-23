@@ -246,6 +246,7 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
           }}
     #Once we have credentials ready, get token
     access_token <- dms_token(client_id, client_secret)
+    message("Access token retrieved successfully.")
     }
   
   #Checking URL ending is correct
@@ -459,7 +460,7 @@ raster_calc <- function(ras, period, fun, na.rm = F){
                             t, sep = "_")
     #Update time information
     time(ras_fun) <- ifelse(period == "monthly", 
-                            ym(t), as.Date(paste0(t, "-01-01")))
+                            ym(t), ymd(paste0(t, "-01-01")))
     
     #Add units
     units(ras_fun) <- units_ras
