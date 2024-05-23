@@ -403,7 +403,7 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
 # Applying function to SpatRaster -----------------------------------------
 raster_calc <- function(ras, period, fun, na.rm = F){
   ############
-  #This function uses the app function from terra to apply a function to a 
+  #This function uses the tapp function from terra to apply a function to a 
   #SpatRaster object. Any functions accepted by app can be used here. Raster
   #will be grouped either by year or month before applying the function.
   #
@@ -413,7 +413,7 @@ raster_calc <- function(ras, period, fun, na.rm = F){
   #period (character): Period for which the function will be applied. It can
   #be either "monthly" or "yearly".
   #fun (function): Function to be applied to the raster. It must be a function
-  #accepted by the app function from terra.
+  #accepted by the tapp function from terra.
   #na.rm (logical): If TRUE, NA values will be removed before applying the
   #function. Default is FALSE.
   
@@ -427,47 +427,34 @@ raster_calc <- function(ras, period, fun, na.rm = F){
   #If period is monthly, we will get the month and year
   if(period == "monthly"){
     mystamp <- stamp("2020-01", order = "%Y-%m")
-    #Get unique values for month and year combinations
-    per_int <- mystamp(time_ras) |> 
-      unique()
+    #Get month and year combinations
+    per_int <- mystamp(time_ras)
   }else if (period == "yearly"){
-    #Get unique values for year
+    #Get years
     per_int <- year(time_ras) |> 
-      unique() |> 
       as.character()
   }else{
     stop("Period should be either 'monthly' or 'yearly'")
   }
   
   #Initialise empty vector to store results
-  ras_out <- c()
+  ras_out <- tapp(ras, index = per_int, fun = fun, na.rm = na.rm)
   
-  #Loop through each period of interest
-  for(t in per_int){
-    #Subset data for the period
-    ras_period <- ras[[str_detect(time_ras, t)]]
-    
-    #Apply function
-    ras_fun <- app(ras_period, fun, na.rm = na.rm)
-    
-    #Update variable name
-    varnames(ras_fun) <- paste(names(ras_fun), 
-                            varnames(ras_period),
-                            sep = "_")
-    
-    #New name for layer - including time
-    names(ras_fun) <- paste(names(ras_fun),
-                            t, sep = "_")
-    #Update time information
-    time(ras_fun) <- ifelse(period == "monthly", 
-                            ym(t), ymd(paste0(t, "-01-01")))
-    
-    #Add units
-    units(ras_fun) <- units_ras
-    
-    #Store the result
-    ras_out <- append(ras_out, ras_fun)
+  #Update variable name
+  varnames(ras_out) <- paste(fun, varnames(ras), sep = "_")
+  
+  #New name for layer - including time
+  names(ras_out) <- paste(fun, unique(per_int), sep = "_")
+  
+  #Update time information
+  if(period == "monthly"){
+    time(ras_out) <- ym(unique(per_int))
+  }else{
+    time(ras_out) <- ymd(paste0(unique(per_int), "-01-01"))
   }
+  
+  #Add units
+  units(ras_out) <- units_ras
   
   #Return SpatRaster
   return(ras_out)
