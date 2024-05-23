@@ -56,7 +56,7 @@ variable_name <- "analysed_sst"
 
 #Connecting to DMS and downloading data
 sst_gbr <- connect_dms_dataset(base_url, variable_name, 
-                               start_time = '2019-01-01', 
+                               start_time = '2004-01-01', 
                                end_time = '2023-12-31',
                                bounding_shape = whitsundays)
 ```
@@ -137,11 +137,13 @@ sst_ts <- ras_to_ts(sst_mean, mean, na.rm = T)
 sst_ts$time_series |> 
   ggplot(aes(x = time, y = mean))+
   geom_line()+
-  scale_x_date(date_breaks = "6 month", date_labels = "%Y-%m")+
+  scale_x_date(date_breaks = "2 year", date_labels = "%Y-%m",
+               date_minor_breaks = "6 month")+
   theme_bw()+
   labs(title = "Monthly SST mean over Whitsunday Island",
        y = "Sea Surface Temperature (°C)")+
-  theme(axis.title.x = element_blank())
+  theme(axis.title.x = element_blank(), 
+        axis.text.x = element_text(angle = 45, hjust = 1))
 ```
     
 We can also plot the maximum monthly values. This function could be used to calculate the Maximum Monthly Mean (MMM), which is a metric used to assess the bleaching potential of the sea surface temperature. MMM is often calculated as the maximum monthly mean of the sea surface temperature over a 30-year period, but here we are showing how to apply the function with a smaller range of time.
