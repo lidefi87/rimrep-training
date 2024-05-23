@@ -56,7 +56,7 @@ variable_name <- "analysed_sst"
 
 #Connecting to DMS and downloading data
 sst_gbr <- connect_dms_dataset(base_url, variable_name, 
-                               start_time = '2004-01-01', 
+                               start_time = '1994-01-01', 
                                end_time = '2023-12-31',
                                bounding_shape = whitsundays)
 ```
@@ -95,7 +95,7 @@ We will calculate the monthly mean of the sea surface temperature for the reefs 
   
 ```{r}
 #Applying function to calculate monthly mean
-sst_mean <- raster_calc(sst_gbr, "monthly", mean)
+sst_mean <- raster_calc(sst_gbr, "monthly", "mean", na.rm = T)
 
 #Checking result
 sst_mean
