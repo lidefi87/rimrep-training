@@ -91,31 +91,11 @@ ggplot()+
 The grey areas are land areas without any temperature data.  
 
 ## Calculating monthly sea surface temperature mean
-We will calculate the monthly mean of the sea surface temperature for the reefs surrounding the Whitsunday Island. The result will be gridded data.  
+We will calculate the monthly mean of the sea surface temperature for the reefs surrounding the Whitsunday Island. We will use the `raster_calc` function included in the `useful_functions.R` script. The result will be gridded data.  
   
 ```{r}
-#Extract time label
-time_sst <- time(sst_gbr)
-
-#Since we want to calculate the monthly mean, we will get the month and year
-#from the time label
-mystamp <- stamp("2020-01", order = "%Y-%m")
-yr_mth <- mystamp(time_sst) |> 
-  unique()
-
-#Create empty vector to store results
-sst_mean <- c()
-#We will loop through each month/year and calculate the mean
-for(ym in yr_mth){
-  #Subset data for the month
-  sst_month <- mean(sst_gbr[[str_detect(time_sst, ym)]], na.rm = T)
-  #Update name of layer
-  names(sst_month) <- paste("mean_sst", ym, sep = "_")
-  #Update time information
-  time(sst_month) <- ym(ym)
-  #Store the result
-  sst_mean <- append(sst_mean, sst_month)
-}
+#Applying function to calculate monthly mean
+sst_mean <- raster_calc(sst_gbr, "monthly", mean)
 
 #Checking result
 sst_mean
@@ -129,7 +109,7 @@ We can now plot the monthly mean for the sea surface temperature. We will do thi
 #Start a plot
 ggplot()+
   #Plot one raster layer
-  geom_spatraster(data = sst_mean$`mean_sst_2019-01`)+
+  geom_spatraster(data = sst_mean$`mean_2019-01`)+
   #Choose a nicer palette for our map
   scale_fill_distiller(palette = "YlOrRd", name = "mean SST")+
   #Add Australia
@@ -146,17 +126,15 @@ ggplot()+
   theme(plot.title = element_text(hjust = 0.5))
 ```
     
-## Calculating monthly sea surface temperature mean over area of interest
-We can also obtain a time series by calculating a mean over the interest area of interest. We will use the Whitsunday Island monthly SST.  
+## Calculating time series and maximum monthly values
+We can calculate the mean for each time step included in the raster to obtain a time series (i.e., a single value for each layer). Then we can identify the maximum value per month. The `ras_to_ts` function in the `useful_functions.R` script will do this for us. This function returns a list that includes the time series and the maximum monthly values from the time series.   
   
 ```{r}
-#Calculating mean over area of interest
-sst_ts <- global(sst_mean, fun = mean, na.rm = T) |> 
-  #Adding time information
-  mutate(time = ym(yr_mth))
+#Calculating time series and maximum monthly values
+sst_ts <- ras_to_ts(sst_mean, mean, na.rm = T) 
 
 #Plotting time series
-sst_ts |> 
+sst_ts$time_series |> 
   ggplot(aes(x = time, y = mean))+
   geom_line()+
   scale_x_date(date_breaks = "6 month", date_labels = "%Y-%m")+
@@ -166,22 +144,11 @@ sst_ts |>
   theme(axis.title.x = element_blank())
 ```
     
-## Calculating Maximum Monthly Mean (MMM)
-The Maximum Monthly Mean (MMM) is a metric used to assess the bleaching potential of the sea surface temperature. It is calculated as the maximum monthly mean of the sea surface temperature over a 30-year period. 
-
-However, for this example we will use the 5-year SST data for Whitsunday Island.  
+We can also plot the maximum monthly values. This function could be used to calculate the Maximum Monthly Mean (MMM), which is a metric used to assess the bleaching potential of the sea surface temperature. MMM is often calculated as the maximum monthly mean of the sea surface temperature over a 30-year period, but here we are showing how to apply the function with a smaller range of time.
   
 ```{r}
-mmm <- sst_ts |> 
-  mutate(month = month(time, label = T)) |> 
-  #Group by month
-  group_by(month) |>
-  #Identify the maximum monthly mean
-  summarise(max_monthly_mean = max(mean)) |> 
-  rownames_to_column()
-
-mmm |> 
-  ggplot(aes(month, max_monthly_mean, group = 1))+
+sst_ts$max_monthly_ts |> 
+  ggplot(aes(month, max_monthly_val, group = 1))+
   geom_line()+
   theme_bw()+
   labs(title = "MMM for Whitsunday Island",
