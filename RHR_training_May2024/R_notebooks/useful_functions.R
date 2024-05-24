@@ -106,7 +106,8 @@ gbr_features <- function(site_name = NULL, site_ID = NULL){
   #Extract sites
   sites_all <- data_df %>% 
   #Selecting unique sites included in the dataset
-  distinct(UNIQUE_ID, GBR_NAME, LOC_NAME_S, geometry) %>%
+  distinct(UNIQUE_ID, GBR_NAME, LOC_NAME_S, geometry, FEAT_NAME,
+           LEVEL_1, LEVEL_2, LEVEL_3) %>%
   #This will load them into memory
   collect()
   
