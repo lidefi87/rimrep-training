@@ -481,7 +481,7 @@ ras_to_ts <- function(ras, fun, na.rm = F){
   #Get time information from raster
   time_ras <- time(ras) |> 
     #Transform to date format
-    as.Date()
+    as.Date(origin = lubridate::origin)
   #Get unit information from raster
   unit_ras <- units(ras)
   #Get the time series of the raster
