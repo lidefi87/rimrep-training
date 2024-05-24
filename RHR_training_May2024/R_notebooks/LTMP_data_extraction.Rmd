@@ -61,7 +61,7 @@ df_sub <- data_df |>
   collect()
 
 #Check results
-df_sub
+names(df_sub)
 ```
   
 We can see that there are a number of columns that are completely empty. We can remove these columns to make the dataset more manageable.  
@@ -112,4 +112,41 @@ data_mth |>
 It appears that most of the data in 2020 came from offshore areas at a depth of 9 meters.  
 
 By checking the contents of a subset of the dataset, we can get a better idea of the information included in it. This will help us to identify the variables that are relevant to us, and to understand the structure of the dataset.
+
+
+## Extra example during workshop
+Plotting hard coral cover over entire period of dataset.
   
+```{r}
+#Extracting hard coral data
+hc <- data_df |>
+  #Ignoring geometries (because it takes a long time)
+  select(!geometry) |>
+  filter(variable == "HARD CORAL") |> 
+  collect()
+
+#Creating a plot
+hc |> 
+  #Transforming to percentage
+  mutate(mean = mean*100, lower = lower*100, upper = upper*100) |> 
+  remove_empty("cols") |> 
+  filter(domain_name == "LANGFORD AND BIRD ISLES" &
+           domain_category == "reef" & purpose == "COMPOSITION") |> 
+  mutate(date = ymd(date)) |> 
+  ggplot(aes(date, mean, color = reefpage_category))+
+  geom_line()+
+  geom_ribbon(aes(ymin = lower, ymax = upper, 
+                  fill = reefpage_category), alpha = 0.3)+
+  facet_wrap(~reefpage_category)+
+  labs(fill = "Hard coral taxa", color = "Hard coral taxa",
+       y = "Coral coverage (%)")+
+  theme_classic()+
+  theme(axis.title.x = element_blank(), legend.position = "top")
+```
+```{r}
+hc <- data_df |> 
+  filter(variable == "HARD CORAL") |> 
+  collect()
+
+
+```
