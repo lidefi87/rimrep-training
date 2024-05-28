@@ -201,11 +201,12 @@ pp <- ggplot(jb_sst_mean, aes(x = time, y = mean)) +
   ## add MMM line
   geom_hline(yintercept = john_brewer_MMM, linetype = "dashed", color = "coral") +
   ## Add MMM label at the end of the line
-  annotate("text", x = as.Date("2024-04-10"), y = john_brewer_MMM, label = "MMM", color = "coral", vjust=-1)+
+  annotate("text", x = as.Date("2024-04-15"), y = john_brewer_MMM, label = "MMM", color = "coral", vjust=-0.5)+
   ## limit the plot to January-April 2024 and adjust the y scale
-  coord_cartesian(xlim = as.Date(c("2024-01-01", "2024-04-15")), ylim = c(26, 30))+
-  labs(title = "SST evolution at John Brewer Reef", subtitle = "2024", x = "Date", y = "SST (°C)")+
-  theme_bw()
+  coord_cartesian(xlim = as.Date(c("2024-01-01", "2024-04-15")), ylim = c(26, 31))+
+  labs(title = "SST evolution at John Brewer Reef - 2024", x = "Date", y = "SST (°C)")+
+  theme_classic(base_size = 14)
+  
 
 pp
 
