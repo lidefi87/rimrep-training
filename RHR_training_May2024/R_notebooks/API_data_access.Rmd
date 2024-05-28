@@ -101,7 +101,7 @@ sst_mean <- raster_calc(sst_gbr, "monthly", "mean", na.rm = T)
 sst_mean
 ```
   
-We can see that the number of layers in the raster was reduced from `r nlyr(sss_gbr)` in the original raster downloaded from the API to `r nlyr(sst_mean)` when the monthly means were calculated.  
+We can see that the number of layers in the raster was reduced from `r nlyr(sst_gbr)` in the original raster downloaded from the API to `r nlyr(sst_mean)` when the monthly means were calculated.  
 
 We can now plot the monthly mean for the sea surface temperature. We will do this for the first layer.  
   
