@@ -515,7 +515,8 @@ getMP <- function(){
   data_df <- open_dataset(data_bucket)
   #Extracting geometry
   df <- data_df |> collect()
-  MP <- sf::st_as_sfc(structure(as.list(df$geometry), class = "WKB"), crs = 4326)
+  MP <- data.frame(ID = "GBR Marine Park boundary", 
+                   geometry=st_make_valid((sf::st_as_sfc(structure(as.list(df$geometry), class = "WKB"), crs = 4326))))
   return(MP)
 }
 
@@ -533,7 +534,7 @@ getGBRMA <- function(area=NULL){
   if (!is.null(area)){
     area <- tolower(area)
     if (sum(grepl(area,tolower(areaNames)))==1){
-      name <- areaNames[which(grepl(area, tolower(ma)))]
+      name <- areaNames[which(grepl(area, tolower(areaNames)))]
       df <- data_df |> filter(AREA_DESCR == name) |> collect()
     }else if (sum(grepl(area,tolower(areaNames)))==0){
       print("Area not found")
@@ -544,9 +545,11 @@ getGBRMA <- function(area=NULL){
     }
   }else{
     df <- data_df |> collect()
+    name <- df$AREA_DESCR
   }
   #Extracting geometry
-  MP <- sf::st_as_sfc(structure(as.list(df$geometry), class = "WKB"))
+  MP <- data.frame(ID = name, 
+                   geometry=(sf::st_as_sfc(structure(as.list(df$geometry), class = "WKB"), crs = 4326)))
   return(MP)
 }
 
