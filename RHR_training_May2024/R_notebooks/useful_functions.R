@@ -505,4 +505,50 @@ ras_to_ts <- function(ras, fun, na.rm = F){
 }
 
 
+## Get MP geometry --------------------------------------------------------
+# This function retrieves the geometry of the Great Barrier Reef Marine Park from the GBRMPA dataset.
+# reutrns a simple feature collection of the MP geometry
+getMP <- function(){
+  #Establishing connection
+  data_bucket <- s3_bucket("s3://gbr-dms-data-public/gbrmpa-marine-park-limits/data.parquet")
+  #Accessing dataset
+  data_df <- open_dataset(data_bucket)
+  #Extracting geometry
+  df <- data_df |> collect()
+  MP <- sf::st_as_sfc(structure(as.list(df$geometry), class = "WKB"), crs = 4326)
+  return(MP)
+}
+
+
+## Get GBR adminareas geometry ---------------------------------------------
+# This function retrieves the geometry of the Great Barrier Reef Marine Park Management Areas from the GBRMPA dataset.
+# returns a simple feature collection of the MP geometry
+getGBRMA <- function(area=NULL){
+  areaNames = c("Mackay/Capricorn Management Area","Townsville/Whitsunday Management Area",
+                "Cairns/Cooktown Management Area","Far Northern Management Area")
+  #Establishing connection
+  data_bucket <- s3_bucket("s3://gbr-dms-data-public/gbrmpa-management-areas/data.parquet")
+  #Accessing dataset
+  data_df <- open_dataset(data_bucket)
+  if (!is.null(area)){
+    area <- tolower(area)
+    if (sum(grepl(area,tolower(areaNames)))==1){
+      name <- areaNames[which(grepl(area, tolower(ma)))]
+      df <- data_df |> filter(AREA_DESCR == name) |> collect()
+    }else if (sum(grepl(area,tolower(areaNames)))==0){
+      print("Area not found")
+      return(NULL)
+    }else if (sum(grepl(area,tolower(areaNames)))>1){
+      print("Multiple areas found")
+      return(NULL)
+    }
+  }else{
+    df <- data_df |> collect()
+  }
+  #Extracting geometry
+  MP <- sf::st_as_sfc(structure(as.list(df$geometry), class = "WKB"))
+  return(MP)
+}
+
+
 
