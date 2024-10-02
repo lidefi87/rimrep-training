@@ -10,24 +10,43 @@ To use the [GBR Data Management System (DMS)](https://stac.reefdata.io/browser/?
 
 ## Agenda
   
+### Day 1
+
 | Time  | Activity |
 |-------|:---------------------------------------------------------------|
-| 10:00 | Introduction and workshop goals                               |
-| 10:15 | The GBR Data Management System (DMS): What is it and services available |
-| 10:30 | Morning tea                                                   |
-| 10:45 | 1. Exploring the DMS catalogue and discovering datasets       |
-|       | 2. How to write a shareable R script                          |
-|       | 3. How to understand and report errors in R                   |
-|       | 4. How to ask for help: The importance of reproducible examples |
+| 09:00 | Introduction and workshop goals                               |
+| 09:15 | The GBR Data Management System (DMS): What is it and services available |
+| 09:45 | Exploring the DMS catalogue and discovering datasets       |
+| 10:00 | Morning tea                                                   |
+| 10:15 | General coding tools and best practices in R (this may not be necessary)  |
+|       | 1. How to write a shareable R script                          |
+|       | 2. How to understand and report errors in R                   |
+|       | 3. How to ask for help: The importance of reproducible examples |
+| 11:00 | How to use the DMS                                    |
 | 12:00 | Lunch break                                                   |
 | 13:00 | How to work with the DMS data API                             |
-| 14:00 | 1. How to extract time series from raster and tabular datasets|
+| 13:30 | 1. How to extract time series from raster and tabular datasets|
 |       | 2. How to calculate the SST Maximum Monthly Mean (MMM)        |
 |       | 3. How to calculate DHW and DHD                               |
 | 15:30 | Afternoon tea break                                           |
 | 15:45 | Breaking code: Adapting examples to your needs                |
-| 16:30 | Feedback and conclusions                                      |
-| 17:00 | Closure                                                       |
+| 16:30 | Closure                                                       |
+
+### Day 2
+
+
+| Time  | Activity |
+|-------|:---------------------------------------------------------------|
+| 09:00 | Review of the previous day                                     |
+| 09:15 | Coding project progress: questions             |
+| 10:00 | Morning tea                                                   |
+| 10:15 | Continue working on projects                                  |
+| 12:00 | Lunch break                                                   |
+| 12:30 | Review of results and discussion                              |
+| 15:30 | Afternoon tea break                                           |
+| 15:45 | Feedback and conclusions                                      |
+| 16:00 | Closure                                                       |
+
 
 **NOTE:** Please read the [Pre-event Instructions](https://github.com/aodn/rimrep-training/blob/main/Pre-Event%20Instructions.pdf) before you attend the workshop to avoid delays on the day. You will likely need to install some `R` packages on your computer to run the examples.  
  
