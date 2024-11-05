@@ -112,8 +112,7 @@ data_mth |>
 It appears that most of the data in 2020 came from offshore areas at a depth of 9 meters.  
 
 By checking the contents of a subset of the dataset, we can get a better idea of the information included in it. This will help us to identify the variables that are relevant to us, and to understand the structure of the dataset.
-
-
+  
 ## Extra example during workshop
 Plotting hard coral cover over entire period of dataset.
   
@@ -142,11 +141,4 @@ hc |>
        y = "Coral coverage (%)")+
   theme_classic()+
   theme(axis.title.x = element_blank(), legend.position = "top")
-```
-```{r}
-hc <- data_df |> 
-  filter(variable == "HARD CORAL") |> 
-  collect()
-
-
 ```
