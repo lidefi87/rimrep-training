@@ -39,7 +39,6 @@ AODN metadata catalogue: [AODN Catalogue](https://catalogue-imos.aodn.org.au/geo
 
 
 
-
 **NOTE:** Please read the [Pre-event Instructions](https://github.com/aodn/rimrep-training/blob/main/Pre-Event%20Instructions.pdf) before you attend the workshop to avoid delays on the day. You will likely need to install some `R` packages on your computer to run the examples.  
  
 ## How to use DMS services and data
