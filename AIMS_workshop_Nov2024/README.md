@@ -165,14 +165,30 @@ Save your changes, close the tab, and restart your `R` session for changes to ta
 We will provide specific set of credetials prior to the workshop.
 
 
-## Datasets to be used
+## Use Cases
 
-In this workshop, we will use the following datasets:
+In the afternoon session, we will work on some the following use cases. We will provide the URI of the datasets that you will need to access in the DMS to complete these tasks. Any use case can be completed using either `R` or `Python`.
 
+### Use Case 1: Extract a time series for a variable of interest for a point, reef, or region
+**Description**: Extract a time series for a point, reef, or region. You can choose any variable of interest (e.g., SST, chlorophyll-a, salinity, etc.) and any location (point, reef, or region). 
 
-| Dataset name | Description | STAC ITEM |
-|--------------|-------------|-----|
-|              |             |     |
-|              |             |     |
-|              |             |     |
-|              |             |     |
+### Use Case 2: Calculate the Maximum Monthly Mean (MMM) for sea surface temperature (SST)
+**Description**: Calculate the Maximum Monthly Mean (MMM) for sea surface temperature (SST) for a point, reef, or region. This implies calculating the DHW from any temperature source you choose. The climatology could be calculated from the same dataset or from a different one, like NOAA climatology or SSTAARS
+
+### Use Case 3: Calculate DHD (*à la BOM*) for a reef or region
+**Description**: Calculate the Degree Heating Days (DHD) for a reef or region. This implies calculating the temperature anomlaies from any temperature source you choose. The climatology could be calculated from the same dataset or from a different one, like NOAA climatology or SSTAARS.
+
+### Use Case 4: Extract variables from LTMP modelled output and correlate with environmental data.
+**Description**: Extract variables from the Long Term Monitoring Program (LTMP) modelled output and correlate with environmental data. You can choose any variable of interest (e.g., SST, chlorophyll-a, salinity, etc.) and any location (point, reef, or region).
+
+### Use Case 5: Extract NRT data from AIMS Weather Stations and correlate with BOM AUSWave prediction forecasts.
+**Description**: Extract NRT data from AIMS Weather Stations and correlate with BOM AUSWave prediction forecasts. You can choose any location (point, reef, or region).
+
+### Use Case 6: Calibrate eReefs modelled data with in-situ data.
+**Description**: Calibrate eReefs temperature modelled data with in-situ data. You will use AIMS Temperature Loigger program for selected sites to perform the calibration.
+
+### Use Case 7: Explore the relatiponship between GBR users perpectives and environmental and biological data.
+**Description**: Explore the relatiponship between GBR users perpectives and environmental and biological data. You can use the SELTMP user survey data and correlate with environmental data, like heating indicators and biological data form LTMP modelled output.
+
+### Use Case 8: Explore NRT water quality data from DES and extract timeseries and anomalies.
+**Description**: Explore NRT water quality data from seven different locations. Correlate with Chla estimates. 
