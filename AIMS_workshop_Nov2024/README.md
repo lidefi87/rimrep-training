@@ -4,48 +4,40 @@
 
 ## Goal
 
-To use the [GBR Data Management System (DMS)](https://stac.reefdata.io/browser/?.language=en) to extract and analyse data (point or time series data) from selected datasets hosted in the DMS. Note that you will need to have a GBR DMS account to access data.
+To use the [GBR Data Management System (DMS)](https://stac.reefdata.io/browser/?.language=en) to extract and analyse data from selected datasets hosted in the DMS. Note that you will need to have a GBR DMS account to access data.
+
+## Useful links
+
+IMOS DMS webpage: [GBR Data Management System](https://imos.org.au/data/access-ocean-data/great-barrier-reef-data-management-system)
+Dataset catalogue: DMS [STAC](https://stac.reefdata.io/browser/?.language=en) browser
+Repository of examples: [GBR DMS Examples](https://github.com/aodn/rimrep-examples)
+DMS technical documentation: [GBR DMS Technical Documentation](https://github.com/aodn/rimrep-documentation)
+AODN Data portal (non-DMS): [AODN Data Portal](https://portal.aodn.org.au/)
+AODN metadata catalogue: [AODN Catalogue](https://catalogue-imos.aodn.org.au/geonetwork/srv/eng/catalog.search#/home)
 
 ### Venue: AIMS Townsville 
 
 ## Agenda
   
-### Day 1
 
 | Time  | Activity |
 |-------|:---------------------------------------------------------------|
 | 09:00 | Introduction and workshop goals                               |
-| 09:15 | The GBR Data Management System (DMS): What is it and services available |
-| 09:45 | Exploring the DMS catalogue and discovering datasets       |
-| 10:00 | Morning tea                                                   |
-| 10:15 | General coding tools and best practices in R (this may not be necessary)  |
+| 09:15 | The GBR Data Management System (DMS): What is it and what services are available |
+| 09:45 | General coding tools and best practices in R and Python  |
 |       | 1. How to write a shareable R script                          |
 |       | 2. How to understand and report errors in R                   |
 |       | 3. How to ask for help: The importance of reproducible examples |
-| 11:00 | How to use the DMS                                    |
+| 10:30 | Morning tea break                                             |
+| 10:15 | How to use the DMS: guided examples                           |
 | 12:00 | Lunch break                                                   |
-| 13:00 | How to work with the DMS data API                             |
-| 13:30 | 1. How to extract time series from raster and tabular datasets|
-|       | 2. How to calculate the SST Maximum Monthly Mean (MMM)        |
-|       | 3. How to calculate DHW and DHD                               |
-| 15:30 | Afternoon tea break                                           |
-| 15:45 | Breaking code: Adapting examples to your needs                |
-| 16:30 | Closure                                                       |
-
-### Day 2
+| 13:00 | Breakout session: work with selected use cases              |
+| 15:00 | Afternoon tea break                                           |
+| 15:15 | Breakout session: work with selected use cases (cont.)             |
+| 16:00 | Presentation of results and discussion                        |
+| 16:30 | Closure                                                  |
 
 
-| Time  | Activity |
-|-------|:---------------------------------------------------------------|
-| 09:00 | Review of the previous day                                     |
-| 09:15 | Coding project progress: questions             |
-| 10:00 | Morning tea                                                   |
-| 10:15 | Continue working on projects                                  |
-| 12:00 | Lunch break                                                   |
-| 12:30 | Review of results and discussion                              |
-| 15:30 | Afternoon tea break                                           |
-| 15:45 | Feedback and conclusions                                      |
-| 16:00 | Closure                                                       |
 
 
 **NOTE:** Please read the [Pre-event Instructions](https://github.com/aodn/rimrep-training/blob/main/Pre-Event%20Instructions.pdf) before you attend the workshop to avoid delays on the day. You will likely need to install some `R` packages on your computer to run the examples.  
@@ -177,4 +169,10 @@ We will provide specific set of credetials prior to the workshop.
 
 In this workshop, we will use the following datasets:
 
-(TBD)
+
+| Dataset name | Description | STAC ITEM |
+|--------------|-------------|-----|
+|              |             |     |
+|              |             |     |
+|              |             |     |
+|              |             |     |
