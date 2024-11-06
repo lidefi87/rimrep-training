@@ -14,32 +14,48 @@ library(sf)
 library(lubridate)
 library(httr2)
 library(terra)
+library(jsonlite)
 
 # Defining supporting functions -------------------------------------------
-#These functions are called by the gbr_features function to subset GBR features by name, ID or both
+#These functions are called by the gbr_features function to subset GBR features
+# by name, ID or both
 
 #Extracting features by feature name
 sub_site <- function(site_name, sites){
-  #Extracting list of unique site names - Transforming to lower case to make them case insensitive
+  #Extracting list of unique site names - Transforming to lower case to make 
+  #them case insensitive
   unique_sites <- str_to_lower(unique(sites$LOC_NAME_S))
-  #Checking that site names provided as input exist in list of unique site names in the GBR features
-  true_site <- unique_sites[str_detect(unique_sites, str_to_lower(paste(site_name, collapse = "|")))]
+  #Checking that site names provided as input exist in list of unique site 
+  #names in the GBR features
+  true_site <- unique_sites[str_detect(unique_sites, 
+                                       str_to_lower(paste(site_name, 
+                                                          collapse = "|")))]
   #If there are no matches, an error will be raised
   if(length(true_site) == 0){
-    stop(paste("Site names given do not exist. Check site names:", paste(site_name, collapse = ",")))
+    stop(paste("Site names given do not exist. Check site names:", 
+               paste(site_name, collapse = ",")))
   }
-  #If some names provided as input are not included in the GBR database, a warning is raised which includes the incorrect names
-  #which will NOT be processed
+  #If some names provided as input are not included in the GBR database, a 
+  #warning is raised which includes the incorrect names which will NOT be 
+  #processed
   if(length(site_name) != length(true_site)){
-    not_site <- site_name[!str_to_lower(site_name) %in% str_match(true_site, str_to_lower(paste(site_name, collapse = "|")))]
-    true_site <- site_name[str_to_lower(site_name) %in% str_match(true_site, str_to_lower(paste(site_name, collapse = "|")))]
+    not_site <- site_name[!str_to_lower(site_name) %in% 
+                            str_match(true_site,
+                                      str_to_lower(paste(site_name, 
+                                                         collapse = "|")))]
+    true_site <- site_name[str_to_lower(site_name) %in% 
+                             str_match(true_site, 
+                                       str_to_lower(paste(site_name, 
+                                                          collapse = "|")))]
     if(length(not_site) > 0){
-      warning(paste("One or more site names do not seem to exist. Check site names:", paste(not_site, collapse = ",")))
+      warning(paste("One or more site names do not seem to exist. Check site ", 
+                    "names:", paste(not_site, collapse = ",")))
     }}
   #Fuzzy matching of site names
   out_site <- tryCatch({
     sites <- sites %>% 
-      filter(str_detect(str_to_lower(LOC_NAME_S), str_to_lower(paste(site_name, collapse = "|"))))
+      filter(str_detect(str_to_lower(LOC_NAME_S),
+                        str_to_lower(paste(site_name, collapse = "|"))))
   },
   error = function(cond){
     message("Here's the original error message:")
@@ -52,30 +68,36 @@ sub_site <- function(site_name, sites){
     message(cond)
     },
   #Printing message of sites included in subsetting of GBR features
-  finally = message("Subsetting GBR features by ", paste(true_site, collapse = ",")))
+  finally = message("Subsetting GBR features by ", paste(true_site, 
+                                                         collapse = ",")))
   return(out_site)
 }
 
 
 #Extracting features by ID
 sub_ID <- function(site_ID, sites){
-  #Ensure site IDs is of class character and has 11 characters (zeroes will be added if needed)
+  #Ensure site IDs is of class character and has 11 characters (zeroes will be
+  #added if needed)
   if(class(site_ID) != "character"){
     site_ID <- str_pad(as.character(site_ID), 11, pad = 0)
   }
   #Extracting list of unique site IDs
   unique_ID <- unique(sites$UNIQUE_ID)
-  #Checking that site IDs provided as input exist in list of unique site IDs in the GBR features
+  #Checking that site IDs provided as input exist in list of unique site IDs in
+  #the GBR features
   true_ID <- site_ID[site_ID %in% unique_ID]
   #If there are no matches, an error will be raised
   if(length(true_ID) == 0){
-    stop(paste("Site IDs given do not exist. Check site IDs:", paste(site_ID, collapse = ",")))
+    stop(paste("Site IDs given do not exist. Check site IDs:",
+               paste(site_ID, collapse = ",")))
   }
-  #If some IDs provided as input are not included in the GBR database, a warning is raised which includes the incorrect IDs
-  #which will NOT be processed
+  #If some IDs provided as input are not included in the GBR database, a 
+  #warning is raised which includes the incorrect IDs which will NOT be 
+  #processed
   if(length(site_ID) != length(true_ID)){
     not_ID <- site_ID[!site_ID %in% unique_ID]
-  warning(paste("One or more site IDs do not seem to exist. Check site IDs:", paste(not_ID, collapse = ",")))
+  warning(paste("One or more site IDs do not seem to exist. Check site IDs:",
+                paste(not_ID, collapse = ",")))
   }
   #Matching of site IDs
   out_ID <- tryCatch({
@@ -92,14 +114,16 @@ sub_ID <- function(site_ID, sites){
     message("Here's the original error message:")
     message(cond)
   },
-  finally = message("Subsetting GBR features by ", paste(true_ID, collapse = ",")))
+  finally = message("Subsetting GBR features by ", paste(true_ID, 
+                                                         collapse = ",")))
   return(out_ID)
 }
 
 ## Getting shapefile with Great Barrier Reef features ---------------------
 gbr_features <- function(site_name = NULL, site_ID = NULL){
   #Establishing connection
-  data_bucket <- s3_bucket("s3://gbr-dms-data-public/gbrmpa-complete-gbr-features/data.parquet")
+  data_bucket <- s3_bucket(
+    "s3://gbr-dms-data-public/gbrmpa-complete-gbr-features/data.parquet")
   #Accessing dataset
   data_df <- open_dataset(data_bucket)
   
@@ -119,7 +143,8 @@ gbr_features <- function(site_name = NULL, site_ID = NULL){
   #Ensuring simple feature has valid geometries
   sites_all <- st_make_valid(sites_all)
   
-  #If site names and site IDs are given, search database using the functions above
+  #If site names and site IDs are given, search database using the functions 
+  #above
   if(!is.null(site_name) & !is.null(site_ID)){
     names_sub <- sub_site(site_name, sites_all)
     ids_sub <- sub_ID(site_ID, sites_all)
@@ -163,7 +188,8 @@ dms_token <- function(client_id, client_secret){
   #client_secret (character): CLIENT_SECRET provided by DMS team. 
   
   # Define base keycloak URL
-  url <- "https://keycloak.reefdata.io/realms/rimrep-production/protocol/openid-connect/token"
+  url <- paste0("https://keycloak.reefdata.io/realms/rimrep-production/",
+                "protocol/openid-connect/token")
   
   # Send request to keycloak
   resp <- url |>
@@ -177,20 +203,23 @@ dms_token <- function(client_id, client_secret){
   
   #If request is successful
   if(resp$status_code == 200){
-    # Extract the access token from the response and store as environmental variable
+    # Extract the access token from the response and store as environmental 
+    #variable
     return(resp_body_json(resp)$access_token)
     }else{
       #Print error if request is unsuccessful
-      stop("'Error retrieving access token. Check your CLIENT_ID and CLIENT_SECRET are correct and try again.'")
+      stop(paste0("'Error retrieving access token. Check your CLIENT_ID and ", 
+                  "CLIENT_SECRET are correct and try again.'"))
       }
 }
 
 
 # Accessing DMS API using credentials provided as input ------------------------
 connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL, 
-                                end_time = NULL, bounding_shape = NULL, lon_limits = NULL, 
-                                lat_limits = NULL, access_token = NULL,
-                                client_id = NULL, client_secret = NULL){
+                                end_time = NULL, bounding_shape = NULL, 
+                                lon_limits = NULL, lat_limits = NULL,
+                                access_token = NULL, client_id = NULL, 
+                                client_secret = NULL){
   #########
   #This function connects to RIMReP API to extract gridded data. It can extract
   #data using spatial and temporal limits
@@ -200,21 +229,23 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
   #variable_name (character): Name of variable that will be returned by function
   #(Optional)
   #start_time (character/date): First date for which data is extracted. If no
-  #end_time is provided, then a single date will be returned. Date format must be
-  #YYYY-MM-DD
-  #end_time (character/date): Last date for which data is extracted. Date must be
-  #provided as YYYY-MM-DD. If no start_time is given, an error will be raised.
-  #bounding_shape (sf vector file): This input will be used to calculate a bounding box
-  #for raster data extraction. If this is provided, lon_limits and lat_limits will
-  #be ignored.
+  #end_time is provided, then a single date will be returned. Date format must 
+  #be YYYY-MM-DD
+  #end_time (character/date): Last date for which data is extracted. Date must 
+  #be provided as YYYY-MM-DD. If no start_time is given, an error will be 
+  #raised.
+  #bounding_shape (sf vector file): This input will be used to calculate a 
+  #bounding box for raster data extraction. If this is provided, lon_limits and 
+  #lat_limits will be ignored.
   #lon_limits (numeric vector): minimum and maximum longitudes from where data
   #should be extracted.
   #lat_limits (numeric vector): minimum and maximum latitudes from where data
   #should be extracted.
   #access_token (character): DMS access token generated
   #client_id (character): CLIENT_ID provided by DMS team. 
-  #client_secret (character): CLIENT_SECRET provided by DMS team. By default, the
-  #function looks for this information in the "CLIENT_SECRET" environmental variable.
+  #client_secret (character): CLIENT_SECRET provided by DMS team. By default, 
+  #the function looks for this information in the "CLIENT_SECRET" environmental 
+  #variable.
   #
   #Outputs:
   #raster (terra SpatRaster): Raster including data for the variable of choice. 
@@ -225,25 +256,29 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
   if(missing(access_token)){
     #If client_id does not exist, check environmental variable
     if(missing(client_id)){
-      message("Warning: No 'access_token' and no user credentials were provided as input.")
+      message(paste0("Warning: No 'access_token' and no user credentials were ",
+                     "provided as input."))
       message("Checking if 'CLIENT_ID' variable exists.")
       #If environmental variable exists, assign to client_id
       if(tryCatch(expr = !is.na(Sys.getenv("CLIENT_ID", unset = NA)))){
         client_id <- Sys.getenv("CLIENT_ID")
       }else{
         #If CLIENT_ID variable does not exist, stop function
-        stop("'CLIENT_ID' does not exist. Provide 'client_id' parameter and try again.")
+        stop(paste0("'CLIENT_ID' does not exist. Provide 'client_id' parameter",
+                    " and try again."))
       }}
     #If client_secret does not exist, check environmental variable
     if(missing(client_secret)){
-        message("Warning: No 'access_token' and user credentials were provided as input.")
+        message(paste0("Warning: No 'access_token' and user credentials were ", 
+                       "provided as input."))
         message("Checking if 'CLIENT_SECRET' variable exists.")
         #If environmental variable exists, assign to client_secret
         if(tryCatch(expr = !is.na(Sys.getenv("CLIENT_SECRET", unset = NA)))){
           client_secret <- Sys.getenv("CLIENT_SECRET")
           }else{
             #If CLIENT_SECRET variable does not exist, stop function
-            stop("'CLIENT_SECRET' does not exist. Provide 'client_secret' parameter and try again.")
+            stop(paste0("'CLIENT_SECRET' does not exist. Provide ", 
+                        "'client_secret' parameter and try again."))
           }}
     #Once we have credentials ready, get token
     access_token <- dms_token(client_id, client_secret)
@@ -259,19 +294,24 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
   query_list <- NULL
   
   #Check if temporal limits were provided
-  #Start time - Ensure date was provided in correct format, otherwise print error
+  #Start time - Ensure date was provided in correct format, otherwise print 
+  #error
   if(!is.null(start_time)){
     start_time <- tryCatch(expr = (ymd(start_time, tz = NULL)),
                            warning = function(w){
-                             message(paste("Start date is NOT in 'YYY-MM-DD' format"))
-                             message("Check date ('", start_time, "') and try again")}
+                             message(paste0("Start date is NOT in 'YYY-MM-DD' ",
+                                            "format"))
+                             message("Check date ('", start_time, 
+                                     "') and try again")}
     )}else{start_time <- NULL}
   #End time - Ensure date was provided in correct format, otherwise print error
   if(!is.null(end_time)){
     end_time <- tryCatch(ymd(end_time, tz = NULL),
                          warning = function(w){
-                           message(paste("End date is NOT in 'YYY-MM-DD' format"))
-                           message("Check date ('", end_time, "') and try again")}
+                           message(paste("End date is NOT in 'YYY-MM-DD' ", 
+                                         "format"))
+                           message("Check date ('", end_time, 
+                                   "') and try again")}
     )}else{end_time <- NULL}
   
   #If only start time exists then use only one date as temporal range
@@ -299,8 +339,10 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
   if(!is.null(dt_limits)){
     dateStart <- str_split(dt_limits, "/", simplify = TRUE)[1]
     dateEnd <- str_split(dt_limits, "/", simplify = TRUE)[2]
-    if(!checkPointsDate(dateStart, extents$dateMin, extents$dateMax) | !checkPointsDate(dateEnd, extents$dateMin, extents$dateMax)){
-      stop("ERROR: Temporal limits provided are not within dataset temporal extent")
+    if(!checkPointsDate(dateStart, extents$dateMin, extents$dateMax) | 
+       !checkPointsDate(dateEnd, extents$dateMin, extents$dateMax)){
+      stop(paste0("ERROR: Temporal limits provided are not within dataset ", 
+                  "temporal extent"))
     }}
   
   #If temporal limits provided, add to URL query
@@ -339,7 +381,8 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
       if(is.numeric(lon_limits) == F){
         lon_limits <- tryCatch(expr = as.numeric(lon_limits),
                                warning = function(w){
-                                 stop("Longitudinal limits provided are not numbers")})
+                                 stop(paste0("Longitudinal limits provided are",
+                                 " not numbers"))})
         if(sum(is.na(lon_limits)) > 0){
           stop("Longitudinal limits provided are not numbers")}
       }
@@ -352,7 +395,8 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
       if(is.numeric(lat_limits) == F){
         lat_limits <- tryCatch(expr = as.numeric(lat_limits),
                                warning = function(w){
-                                 stop("Latitudinal limits provided are not numbers")})
+                                 stop(paste0("Latitudinal limits provided are", 
+                                             " not numbers"))})
         if(sum(is.na(lat_limits)) > 0){
           stop("Latitudinal limits provided are not numbers")}
       }
@@ -378,7 +422,8 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
     if(exists("lon_query") & exists("lat_query")){
       #Check if query points are within dataset bbox
 
-      if(!checkPointsCoords(as.numeric(strsplit(box_lims, ",")[[1]]), extents$bbox)){
+      if(!checkPointsCoords(as.numeric(strsplit(box_lims, ",")[[1]]), 
+                            extents$bbox)){
         stop("Geographical limits provided are not within dataset bounding box")
       }}
     
@@ -414,7 +459,8 @@ connect_dms_dataset <- function(API_base_url, variable_name, start_time = NULL,
   #Checking layers for variable of interest
   lyrs <- str_subset(names(brick), variable_name)
   if(length(lyrs) == 0){
-    print(paste0("Variable ", variable_name, " does not exist. Returning all data."))
+    print(paste0("Variable ", variable_name,
+                 " does not exist. Returning all data."))
     #Return raster
     return(brick)
   }else{
@@ -531,11 +577,12 @@ ras_to_ts <- function(ras, fun, na.rm = F){
 
 
 
-#' Get Great Barrier Reef Marine Park Geometry
+# Get Great Barrier Reef Marine Park Geometry -----------------------------
+#' This function retrieves the geometry of the Great Barrier Reef Marine Park 
+#' from the GBRMPA dataset.
 #'
-#' This function retrieves the geometry of the Great Barrier Reef Marine Park from the GBRMPA dataset.
-#'
-#' @return A simple feature collection (sf object) representing the Marine Park geometry.
+#' @return A simple feature collection (sf object) representing the Marine Park
+#'  geometry.
 #'
 #' @examples
 #' \dontrun{
@@ -548,25 +595,29 @@ ras_to_ts <- function(ras, fun, na.rm = F){
 #' @export
 getMP <- function(){
   #Establishing connection
-  data_bucket <- s3_bucket("s3://gbr-dms-data-public/gbrmpa-marine-park-limits/data.parquet")
+  data_bucket <- s3_bucket(
+    "s3://gbr-dms-data-public/gbrmpa-marine-park-limits/data.parquet")
   #Accessing dataset
   data_df <- open_dataset(data_bucket)
   #Extracting geometry
-  df <- data_df |> collect()
-  df <- df |> sf::st_as_sf(crs = 4326)
-  # MP <- data.frame(ID = "GBR Marine Park boundary", 
-  #                  geometry=st_make_valid((sf::st_as_sfc(structure(as.list(df$geometry), class = "WKB"), crs = 4326))))
+  df <- data_df |> 
+    collect() |> 
+    st_as_sf(crs = 4326)
   return(df)
 }
 
 
-#' Get Great Barrier Reef Management Areas Geometry
+
+# Get Great Barrier Reef Management Areas Geometry ------------------------
+#' This function retrieves the geometry of the Great Barrier Reef Marine Park 
+#' Management Areas from the GBRMPA dataset.
 #'
-#' This function retrieves the geometry of the Great Barrier Reef Marine Park Management Areas from the GBRMPA dataset.
+#' @param area An optional string representing the name of the management area 
+#' to retrieve. If \code{NULL}, all management areas are retrieved. Default is 
+#' \code{NULL}.
 #'
-#' @param area An optional string representing the name of the management area to retrieve. If \code{NULL}, all management areas are retrieved. Default is \code{NULL}.
-#'
-#' @return A simple feature collection (sf object) representing the geometry of the specified management area(s).
+#' @return A simple feature collection (sf object) representing the geometry 
+#' of the specified management area(s).
 #'
 #' @examples
 #' \dontrun{
@@ -582,43 +633,50 @@ getMP <- function(){
 #' @import sf
 #' @import arrow
 #' @export
-getGBRMA <- function(area=NULL){
-  areaNames = c("Mackay/Capricorn Management Area","Townsville/Whitsunday Management Area",
-                "Cairns/Cooktown Management Area","Far Northern Management Area")
+getGBRMA <- function(area = NULL){
+  areaNames = c("Mackay/Capricorn Management Area",
+                "Townsville/Whitsunday Management Area",
+                "Cairns/Cooktown Management Area",
+                "Far Northern Management Area")
   #Establishing connection
-  data_bucket <- s3_bucket("s3://gbr-dms-data-public/gbrmpa-management-areas/data.parquet")
+  data_bucket <- s3_bucket(
+    "s3://gbr-dms-data-public/gbrmpa-management-areas/data.parquet")
   #Accessing dataset
   data_df <- open_dataset(data_bucket)
-  if (!is.null(area)){
+  if(!is.null(area)){
     area <- tolower(area)
-    if (sum(grepl(area,tolower(areaNames)))==1){
+    if(sum(grepl(area,tolower(areaNames))) == 1){
       name <- areaNames[which(grepl(area, tolower(areaNames)))]
-      df <- data_df |> filter(AREA_DESCR == name) |> collect()
-      df <- df |> sf::st_as_sf(crs = 4326)
-    }else if (sum(grepl(area,tolower(areaNames)))==0){
+      df <- data_df |> 
+        filter(AREA_DESCR == name) |> 
+        collect()
+      df <- df |> 
+        st_as_sf(crs = 4326)
+    }else if(sum(grepl(area,tolower(areaNames))) == 0){
       print("Area not found")
       return(NULL)
-    }else if (sum(grepl(area,tolower(areaNames)))>1){
+    }else if (sum(grepl(area,tolower(areaNames))) > 1){
       print("Multiple areas found")
       return(NULL)
     }
   }else{
-    df <- data_df |> collect()
-    df <- df |> sf::st_as_sf(crs = 4326)
-    name <- df$AREA_DESCR
+    df <- data_df |>
+      collect()
+    df <- df |> 
+      st_as_sf(crs = 4326)
   }
 
   return(df)
 }
 
 
-
-#' Get the Extents of a Dataset
-#'
-#' This function retrieves the spatial and temporal extents of a dataset from a specified root URI.
+# Get the Extents of a Dataset --------------------------------------------
+#' This function retrieves the spatial and temporal extents of a dataset from 
+#' a specified root URI.
 #'
 #' @param ds A string representing the dataset identifier.
-#' @param rootURI A string representing the root URI where the dataset is located. Default is "https://gbr-dms-data-public.s3.ap-southeast-2.amazonaws.com/".
+#' @param rootURI A string representing the root URI where the dataset is 
+#' located. Default is "https://gbr-dms-data-public.s3.ap-southeast-2.amazonaws.com/".
 #'
 #' @return A list with the following components:
 #' \describe{
@@ -638,9 +696,9 @@ getGBRMA <- function(area=NULL){
 #'
 #' @import jsonlite
 #' @export
-getExtents <- function(ds, rootURI="https://gbr-dms-data-public.s3.ap-southeast-2.amazonaws.com/"){ 
-  require(jsonlite)
-  
+getExtents <- function(ds, 
+                       rootURI = 
+                         "https://gbr-dms-data-public.s3.ap-southeast-2.amazonaws.com/"){ 
   tryCatch({
     # Get the extents of the dataset
     extents <- fromJSON(paste0(rootURI, ds, "/datapackage.json"))
@@ -648,21 +706,24 @@ getExtents <- function(ds, rootURI="https://gbr-dms-data-public.s3.ap-southeast-
     # If the extents file does not exist, return an error message
     return("Error: extents file does not exist. Check item identifier.")
   })
-  bbox <- extents$spatial$bbox
-  dateMin <- extents$temporal$start_datetime
-  dateMax <- extents$temporal$end_datetime
-  return(list(bbox=bbox, dateMin=dateMin, dateMax=dateMax))
+  
+  return(list(bbox = extents$spatial$bbox, 
+              dateMin = extents$temporal$start_datetime, 
+              dateMax = extents$temporal$end_datetime))
 }
 
 
-#' Check if Query Points are Within Dataset Bounding Box
+# Check if Query Points are Within Dataset Bounding Box -------------------
+#' This function checks if the given query points are within the specified 
+dataset bounding box.
 #'
-#' This function checks if the given query points are within the specified dataset bounding box.
+#' @param Qpoints A numeric vector representing the query point coordinates 
+#' (x, y).
+#' @param Dbbox A numeric vector representing the dataset bounding box 
+#' coordinates (x1, y1, x2, y2).
 #'
-#' @param Qpoints A numeric vector representing the query point coordinates (x, y).
-#' @param Dbbox A numeric vector representing the dataset bounding box coordinates (x1, y1, x2, y2).
-#'
-#' @return A logical value: \code{TRUE} if the query points are within the dataset bounding box, \code{FALSE} otherwise.
+#' @return A logical value: \code{TRUE} if the query points are within the 
+#' dataset bounding box, \code{FALSE} otherwise.
 #'
 #' @examples
 #' \dontrun{
@@ -674,7 +735,8 @@ getExtents <- function(ds, rootURI="https://gbr-dms-data-public.s3.ap-southeast-
 #'
 #' @export
 checkPointsCoords <- function(Qpoints, Dbbox){
-  if(Qpoints[1] >= Dbbox[1] & Qpoints[3] <= Dbbox[3] & Qpoints[2] >= Dbbox[2] & Qpoints[4] <= Dbbox[4]){
+  if(Qpoints[1] >= Dbbox[1] & Qpoints[3] <= Dbbox[3] &
+     Qpoints[2] >= Dbbox[2] & Qpoints[4] <= Dbbox[4]){
     return(TRUE)
   } else {
     return(FALSE)
@@ -682,15 +744,16 @@ checkPointsCoords <- function(Qpoints, Dbbox){
 }
 
 
-#' Check if Query Date is Within Dataset Date Range
-#'
-#' This function checks if the given query date is within the specified dataset date range.
+# Check if Query Date is Within Dataset Date Range ------------------------
+#' This function checks if the given query date is within the specified dataset
+#' date range.
 #'
 #' @param Qdate A Date object representing the query date.
 #' @param DdateMin A Date object representing the dataset start date.
 #' @param DdateMax A Date object representing the dataset end date.
 #'
-#' @return A logical value: \code{TRUE} if the query date is within the dataset date range, \code{FALSE} otherwise.
+#' @return A logical value: \code{TRUE} if the query date is within the dataset
+#' date range, \code{FALSE} otherwise.
 #'
 #' @examples
 #' \dontrun{
