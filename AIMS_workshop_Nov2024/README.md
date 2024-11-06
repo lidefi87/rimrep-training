@@ -19,13 +19,12 @@ AODN metadata catalogue: [AODN Catalogue](https://catalogue-imos.aodn.org.au/geo
 
 ## Agenda
   
-
 | Time  | Activity |
 |-------|:---------------------------------------------------------------|
 | 09:00 | Introduction and workshop goals                               |
 | 09:15 | The GBR Data Management System (DMS): What is it and what services are available |
 | 09:45 | General coding tools and best practices in R and Python  |
-|       | 1. How to write a shareable R script                          |
+|       | 1. How to write a reproducible R script                          |
 |       | 2. How to understand and report errors in R                   |
 |       | 3. How to ask for help: The importance of reproducible examples |
 | 10:30 | Morning tea break                                             |
@@ -36,9 +35,7 @@ AODN metadata catalogue: [AODN Catalogue](https://catalogue-imos.aodn.org.au/geo
 | 15:15 | Breakout session: work with selected use cases (cont.)             |
 | 16:00 | Presentation of results and discussion                        |
 | 16:30 | Closure                                                  |
-
-
-
+  
 **NOTE:** Please read the [Pre-event Instructions](https://github.com/aodn/rimrep-training/blob/main/Pre-Event%20Instructions.pdf) before you attend the workshop to avoid delays on the day. You will likely need to install some `R` packages on your computer to run the examples.  
  
 ## How to use DMS services and data
@@ -161,7 +158,7 @@ CLIENT_SECRET = "paste_CLIENT_SECRET_here"
 
 Save your changes, close the tab, and restart your `R` session for changes to take effect.
 
-We will provide specific set of credetials prior to the workshop.
+We will provide credentials to every participant prior to the workshop.
 
 
 ## Use Cases
