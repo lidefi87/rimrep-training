@@ -715,7 +715,7 @@ getExtents <- function(ds,
 
 # Check if Query Points are Within Dataset Bounding Box -------------------
 #' This function checks if the given query points are within the specified 
-dataset bounding box.
+# dataset bounding box.
 #'
 #' @param Qpoints A numeric vector representing the query point coordinates 
 #' (x, y).
